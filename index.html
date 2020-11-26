@@ -19,9 +19,17 @@
     playground.ready = () => {
       playground.stateShow = true
     
-      const targets = Array(50).fill().map(item => new Target('', 0))
+      const targets = Array(15).fill().map(item => new Target('', 0))
       playground.setTargets(targets)
+
+      targets[5].status = 3
+      targets[2].status = 3
+
+      setTimeout(() => {
+        targets[2].status = 2
+      }, 5000);
     }
+    
 
     console.log(playground)
     

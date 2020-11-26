@@ -1,4 +1,4 @@
-import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CubeTextureLoader, DefaultLoadingManager, EdgesGeometry, FogExp2, ImageLoader, Line, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CubeTextureLoader, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, EdgesGeometry, FogExp2, ImageLoader, Line, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
@@ -12,6 +12,9 @@ import { Team } from './team'
 import Terrain from './Terrain'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
+import * as TWEEN from '@tweenjs/tween.js'
+
+console.log(TWEEN)
 
 export class Playground extends Scene {
   el: Element
@@ -34,7 +37,7 @@ export class Playground extends Scene {
   buildingModel: Mesh
 
   // events
-  ready: Function = () => {}
+  ready: Function = () => { }
 
   constructor(el: Element) {
     super()
@@ -42,6 +45,8 @@ export class Playground extends Scene {
 
     loadAssets((assets: Assets) => {
       const { building } = assets
+      // building.castShadow = true
+      // building.receiveShadow = true
       const box = new Box3().setFromObject(assets.building)
       const boxSize = box.getSize(new Vector3())
       // 缩放到正方形
@@ -51,11 +56,11 @@ export class Playground extends Scene {
         building.scale.z = this.gridSize / boxSize.z
       }
       this.buildingModel = building
-      
+
       this.init(assets)
       if (typeof this.ready === 'function') this.ready()
     })
-    this.add(new AxesHelper(1000))
+    // this.add(new AxesHelper(1000))
   }
 
   private init(assets: Assets) {
@@ -64,14 +69,30 @@ export class Playground extends Scene {
     // 雾效果
     this.fog = new FogExp2(0x020a1e, 0.0005)
     // 灯光
-    this.add(new AmbientLight(0xffffff, 0.5)) // 环境光
-    const spotLight = new SpotLight(0xffffff, 1, 5000, 40)
-    spotLight.position.set(500, 1000, 0)
-    this.add(spotLight)
-    // this.add(new SpotLightHelper(spotLight, 0xaaaaaa))
+    this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
+    const dirLight = new DirectionalLight(0xffffff, 0.2)
+    dirLight.position.set(1500, 800, 3000)
+    // spotLight.castShadow = true
+    this.add(dirLight)
+    // this.add(new DirectionalLightHelper(dirLight, 0xaaaaaa))
 
     // 天空盒
     this.background = assets.cubeTexture
+    // 地板
+    const planeGeometry = new PlaneGeometry(1, 1)
+    // const planeMaterial = new MeshBasicMaterial()
+    // 地形
+    const material = new MeshBasicMaterial({
+      color: 0x006bff,
+      transparent: true,
+      opacity: 0.4,
+      wireframe: true
+    })
+    const terrainGeometry = new Terrain(assets.heightimg)
+    const terrain = new Mesh(terrainGeometry, material)
+    terrain.position.set(0, -300, -300)
+    terrain.scale.set(60, 500, 60)
+    this.add(terrain)
 
     // 后期处理
     this.composer = new EffectComposer(this.renderer)
@@ -80,26 +101,13 @@ export class Playground extends Scene {
 
     const { clientWidth, clientHeight } = this.el
     const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85)
-    bloomPass.threshold = 0.5
-    bloomPass.strength = 0.5
+    bloomPass.threshold = 0.2 // 门槛
+    bloomPass.strength = 2 // 强度
     this.composer.addPass(bloomPass)
 
     // const effectRgbShift = new ShaderPass(RGBShiftShader)
-    // effectRgbShift.uniforms[ 'amount' ].value = 0.001;
+    // effectRgbShift.uniforms[ 'amount' ].value = 0.001
     // this.composer.addPass(effectRgbShift)
-
-    // 地形
-    const material = new MeshBasicMaterial({
-      color: '#00a2ff',
-      transparent: true,
-      opacity: 0.6,
-      wireframe: true
-    })
-    const terrainGeometry = new Terrain(assets.heightimg)
-    const terrain = new Mesh(terrainGeometry, material)
-    terrain.position.set(0, -300, -300)
-    terrain.scale.set(60, 500, 60)
-    this.add(terrain)
 
     // 控制
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
@@ -111,11 +119,10 @@ export class Playground extends Scene {
     this.controls.dampingFactor = 0.1
 
     // 测试盒子
-    // const geometry = new BoxGeometry(10, 1000, 10)
-    // const material = new MeshBasicMaterial({ color: 0x00ff00 })
-    // const cube = new Mesh(geometry, material)
-    // cube.position.y = -150
-    // this.add(cube)
+    const geometry = new BoxGeometry(10, 10, 10)
+    const mt = new MeshBasicMaterial({ color: 0x00ff00 })
+    const cube = new Mesh(geometry, mt)
+    this.add(cube)
 
     // 地图辅助网格
     // const square = new PlaneGeometry(this.gridSize, this.gridSize)
@@ -134,13 +141,14 @@ export class Playground extends Scene {
 
     const { camera, renderer, controls, composer } = this
     const self = this
-    function animate() {
+    function animate(time) {
       requestAnimationFrame(animate)
       composer.render()
       controls.update()
+      TWEEN.update()
       if (self.statsUI) self.statsUI.update()
     }
-    animate()
+    requestAnimationFrame(animate)
 
     window.addEventListener('resize', this.resize.bind(this))
   }
@@ -151,7 +159,9 @@ export class Playground extends Scene {
     })
   }
 
-  public clearTeams() { }
+  public clearTeams() {
+    // 
+  }
 
   public setTargets(targets: Target[]) {
     targets.forEach(target => this.addTarget(target))
@@ -161,8 +171,8 @@ export class Playground extends Scene {
     const index = this.targets.length
     const grid = this.mapGrid[index]
     const { x, y, value } = grid
-    // target.setBuilding(this.buildingModel)
-    target.setBox(this.gridSize, this.gridSize)
+    target.setBuilding(this.buildingModel)
+    // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
       target.position.set(0, -300, 0)
