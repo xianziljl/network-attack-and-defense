@@ -1,0 +1,29 @@
+{
+  "name": "eversec-network-attack-and-defense",
+  "version": "1.0.0",
+  "description": "恒安嘉新网络攻防实训平台",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zhuxianyong@eversec.cn",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@rollup/plugin-typescript": "^6.1.0",
+    "@types/three": "^0.103.2",
+    "rollup-plugin-livereload": "^1.3.0",
+    "rollup-plugin-scss": "^2.6.0",
+    "rollup-plugin-serve": "^1.0.3",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-uglify": "^6.0.3",
+    "rollup-plugin-uglify-es": "0.0.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "three": "^0.122.0"
+  }
+}

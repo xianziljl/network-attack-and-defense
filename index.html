@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>恒安嘉新网络攻防实训平台</title>
+  <link rel="stylesheet" href="./dist/dist.css">
+</head>
+<body>
+  <div class="playground"></div>
+
+  <script type="module">
+    import { Playground, Target, Team, Panel, broadcast, MapGrid } from '/dist/dist.js'
+
+    const playgrouneEl = document.querySelector('.playground')
+    
+    const playground = new Playground(playgrouneEl)
+    
+    playground.ready = () => {
+      playground.stateShow = true
+    
+      const targets = Array(50).fill().map(item => new Target('', 0))
+      playground.setTargets(targets)
+    }
+
+    console.log(playground)
+    
+    // const teams = []
+    // const targets = []
+    // for (const i = 0; i < 9; i++) {
+    //   teams.push(new Team('team' + (i + 1)))
+    // }
+    // playground.setTeams(teams)
+
+    // for (const i = 0; i < 6; i++) {
+    //   targets.push(new Target('target' + (i + 1)))
+    // }
+    // playground.setTargets(targets)
+
+    
+    // document.body.addEventListener('click', () => {
+    //   broadcast('KILL SPREE!!', '队伍 <span style="color:#fff">The_Sky</span> 连续攻破三题!')
+    // })
+  </script>
+</body>
+</html>
