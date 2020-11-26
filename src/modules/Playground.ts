@@ -33,8 +33,7 @@ export class Playground extends Scene {
   teams: Team[] = []
   targets: Target[] = []
 
-  // assets
-  buildingModel: Mesh
+  assets: Assets
 
   // events
   ready: Function = () => { }
@@ -44,6 +43,8 @@ export class Playground extends Scene {
     this.el = el
 
     loadAssets((assets: Assets) => {
+      this.assets = assets
+
       const { building } = assets
       // building.castShadow = true
       // building.receiveShadow = true
@@ -55,7 +56,6 @@ export class Playground extends Scene {
         building.scale.y = this.gridSize / boxSize.y
         building.scale.z = this.gridSize / boxSize.z
       }
-      this.buildingModel = building
 
       this.init(assets)
       if (typeof this.ready === 'function') this.ready()
@@ -171,7 +171,7 @@ export class Playground extends Scene {
     const index = this.targets.length
     const grid = this.mapGrid[index]
     const { x, y, value } = grid
-    target.setBuilding(this.buildingModel)
+    target.setBuilding(this.assets.building)
     // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
