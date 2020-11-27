@@ -1,8 +1,9 @@
-import { CubeTexture, CubeTextureLoader, ImageLoader, Mesh } from 'three'
+import { CubeTexture, CubeTextureLoader, ImageLoader, Mesh, Object3D } from 'three'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 
 export interface Assets {
   building?: Mesh,
+  aerobat?: Mesh,
   heightimg?: HTMLImageElement,
   cubeTexture?: CubeTexture
 }
@@ -10,27 +11,27 @@ export interface Assets {
 export function loadAssets(cbk: Function) {
   const assets: Assets = {}
 
-  const objLoader = new OBJLoader2()
-  const imgLoader = new ImageLoader()
-  const cubeTextureLoader = new CubeTextureLoader()
-
-  let count = 3
+  let count = 4
 
   function callback() {
     count -= 1
     if (!count) cbk(assets)
   }
 
-  imgLoader.load('/assets/imgs/heigh2.jpg', img => {
+  new ImageLoader().load('/assets/imgs/heigh2.jpg', img => {
     assets.heightimg = img
     callback()
   })
-  objLoader.load('/assets/models/building04.obj', obj => {
+  new CubeTextureLoader().load(Array(6).fill('/assets/imgs/bg.jpg'), cubeTexture => {
+    assets.cubeTexture = cubeTexture
+    callback()
+  })
+  new OBJLoader2().load('/assets/models/building-5.obj', obj => {
     assets.building = obj.children[0] as Mesh
     callback()
   })
-  cubeTextureLoader.load(Array(6).fill('/assets/imgs/bg.png'), cubeTexture => {
-    assets.cubeTexture = cubeTexture
+  new OBJLoader2().load('/assets/models/aerobat.obj', obj => {
+    assets.aerobat = obj.children[0] as Mesh
     callback()
   })
 }

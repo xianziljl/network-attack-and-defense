@@ -1,10 +1,11 @@
-import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CubeTextureLoader, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, EdgesGeometry, FogExp2, ImageLoader, Line, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, PerspectiveCamera, PlaneGeometry, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CircleBufferGeometry, CircleGeometry, CubeTextureLoader, CylinderGeometry, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, DoubleSide, EdgesGeometry, FogExp2, ImageLoader, Line, LineBasicMaterial, LineSegments, Loader, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneGeometry, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass"
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass"
-import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader"
+import { CopyShader } from 'three/examples/jsm/shaders/CopyShader'
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { Stats } from '../utils/stats'
 import { MapGrid } from './MapGrid'
 import { Target } from './Target'
@@ -14,19 +15,18 @@ import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
 import * as TWEEN from '@tweenjs/tween.js'
 
-console.log(TWEEN)
-
 export class Playground extends Scene {
   el: Element
 
   camera = new PerspectiveCamera(70, 1, 0.1, 5000)
-  closeUpCamera = new PerspectiveCamera(75, 1, 0.1, 5000) // 特写相机
-  renderer = new WebGLRenderer({ alpha: true, antialias: true })
+  controlCamera = new PerspectiveCamera(70, 1, 0.1, 5000) // 特写相机
+  renderer = new WebGLRenderer({ antialias: false })
+  renderScene: RenderPass
   composer: EffectComposer
   controls: OrbitControls
 
   statsUI: Stats
-  // loadUI = document.createElement('div')
+  loadUI = document.createElement('div')
 
   mapGrid = new MapGrid()
   gridSize = 200
@@ -38,17 +38,30 @@ export class Playground extends Scene {
   // events
   ready: Function = () => { }
 
-  constructor(el: Element) {
+  constructor(el: HTMLElement) {
     super()
     this.el = el
 
-    loadAssets((assets: Assets) => {
-      this.assets = assets
+    this.loadUI.className = 'load-ui'
+    this.el.appendChild(this.loadUI)
 
-      const { building } = assets
-      // building.castShadow = true
-      // building.receiveShadow = true
-      const box = new Box3().setFromObject(assets.building)
+    DefaultLoadingManager.onStart = () => {
+      this.loadUI.innerHTML = `<div>LOADING... 0%</div>`
+    }
+    DefaultLoadingManager.onProgress = (url, loaded, total) => {
+      console.log(loaded, total)
+      this.loadUI.innerHTML = `<div>LOADING... ${ (loaded / total * 100).toFixed(2) }%</div>`
+    }
+
+    loadAssets((assets: Assets) => this.assets = assets)
+
+    DefaultLoadingManager.onLoad = () => {
+      this.loadUI.innerHTML = ''
+      this.loadUI.style.opacity = '0'
+      setTimeout(() => this.el.removeChild(this.loadUI), 5000)
+
+      const building = this.assets.building
+      const box = new Box3().setFromObject(building)
       const boxSize = box.getSize(new Vector3())
       // 缩放到正方形
       if (boxSize.x !== boxSize.y) {
@@ -56,18 +69,18 @@ export class Playground extends Scene {
         building.scale.y = this.gridSize / boxSize.y
         building.scale.z = this.gridSize / boxSize.z
       }
-
-      this.init(assets)
+      this.init(this.assets)
       if (typeof this.ready === 'function') this.ready()
-    })
-    // this.add(new AxesHelper(1000))
+    }
   }
 
   private init(assets: Assets) {
     this.el.appendChild(this.renderer.domElement)
     this.resize()
+    this.camera.position.z = 1000
+    this.camera.lookAt(0, 0, 0)
     // 雾效果
-    this.fog = new FogExp2(0x020a1e, 0.0005)
+    this.fog = new FogExp2(0x0f1022, 0.0005)
     // 灯光
     this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
     const dirLight = new DirectionalLight(0xffffff, 0.2)
@@ -79,8 +92,15 @@ export class Playground extends Scene {
     // 天空盒
     this.background = assets.cubeTexture
     // 地板
-    const planeGeometry = new PlaneGeometry(1, 1)
-    // const planeMaterial = new MeshBasicMaterial()
+    const planeGeometry = new CircleBufferGeometry(2000, 2000, 100, 32)
+    const planeMaterial = new MeshLambertMaterial({ color: 0x2a3d5c }) //, 0x2a3d5c, transparent: true, opacity: 0.5 
+    const planeMesh = new Mesh(planeGeometry, planeMaterial)
+    // planeMaterial.depthWrite = false
+    planeMaterial.side = DoubleSide
+    planeMesh.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
+    // planeMesh.scale.set(5000, 5000, 5000)
+    planeMesh.position.y = -320
+    this.add(planeMesh)
     // 地形
     const material = new MeshBasicMaterial({
       color: 0x006bff,
@@ -95,34 +115,30 @@ export class Playground extends Scene {
     this.add(terrain)
 
     // 后期处理
+    this.renderer.autoClear = false
     this.composer = new EffectComposer(this.renderer)
-    const renderScene = new RenderPass(this, this.camera)
-    this.composer.addPass(renderScene)
+    this.renderScene = new RenderPass(this, this.camera)
+    this.composer.addPass(this.renderScene)
+    // 抗锯齿
+    // const fxaaPass = new ShaderPass(FXAAShader)
+    // this.composer.addPass(fxaaPass)
+    // const pixelRatio = this.renderer.getPixelRatio()
 
+    // fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.el.offsetWidth * pixelRatio );
+    // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.el.offsetHeight * pixelRatio );
+
+    // 泛光效果
     const { clientWidth, clientHeight } = this.el
-    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 1.5, 0.4, 0.85)
-    bloomPass.threshold = 0.2 // 门槛
-    bloomPass.strength = 2 // 强度
+    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 2, 1.2, 0.25) // 半径，强度，门槛
     this.composer.addPass(bloomPass)
 
-    // const effectRgbShift = new ShaderPass(RGBShiftShader)
-    // effectRgbShift.uniforms[ 'amount' ].value = 0.001
-    // this.composer.addPass(effectRgbShift)
-
     // 控制
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    // this.controls.minDistance = 500
-    // this.controls.maxDistance = 1600
-    this.controls.autoRotate = true
-    this.controls.autoRotateSpeed = 1
-    this.controls.enableDamping = true
-    this.controls.dampingFactor = 0.1
 
     // 测试盒子
-    const geometry = new BoxGeometry(10, 10, 10)
-    const mt = new MeshBasicMaterial({ color: 0x00ff00 })
-    const cube = new Mesh(geometry, mt)
-    this.add(cube)
+    // const geometry = new BoxGeometry(10, 10, 10)
+    // const mt = new MeshBasicMaterial({ color: 0x00ff00 })
+    // const cube = new Mesh(geometry, mt)
+    // this.add(cube)
 
     // 地图辅助网格
     // const square = new PlaneGeometry(this.gridSize, this.gridSize)
@@ -137,20 +153,32 @@ export class Playground extends Scene {
     //   if (i > 0) this.add(sq)
     // }
 
-    this.camera.position.z = 1000
-
-    const { camera, renderer, controls, composer } = this
     const self = this
     function animate(time) {
       requestAnimationFrame(animate)
-      composer.render()
-      controls.update()
+      self.composer.render()
+      if (self.controls) self.controls.update()
       TWEEN.update()
       if (self.statsUI) self.statsUI.update()
     }
     requestAnimationFrame(animate)
 
     window.addEventListener('resize', this.resize.bind(this))
+
+    // document.body.addEventListener('dblclick', this.startAnim.bind(this))
+    this.initControls()
+  }
+
+  private initControls() {
+    console.log(this)
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    // this.controls.minDistance = 500
+    // this.controls.maxDistance = 1600
+    this.controls.enabled = true
+    this.controls.autoRotate = true
+    this.controls.autoRotateSpeed = 1
+    this.controls.enableDamping = true
+    this.controls.dampingFactor = 0.1
   }
 
   public setTeams(teams: Team[] = []) {
@@ -164,6 +192,7 @@ export class Playground extends Scene {
   }
 
   public setTargets(targets: Target[]) {
+    this.clearTargets()
     targets.forEach(target => this.addTarget(target))
   }
 
@@ -175,27 +204,38 @@ export class Playground extends Scene {
     // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
-      target.position.set(0, -300, 0)
+      target.position.set(0, -800, 0)
     } else {
-      target.position.set(x * this.gridSize + this.gridSize / 2, -300, y * this.gridSize + this.gridSize / 2)
+      target.position.set(x * this.gridSize + this.gridSize / 2, -800, y * this.gridSize + this.gridSize / 2)
       target.scale.y = value / 100
     }
     this.add(target)
+    const p = target.position
+    new TWEEN.Tween(p)
+      .delay((index + 1) * 50)
+      .to({ x: p.x, y: -300, z: p.z }, 2500)
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .start()
+    const lineMtl = target.lines.material as Material
+    lineMtl.opacity = 1
+    new TWEEN.Tween(lineMtl)
+      .delay((index + 1) * 100 + 3000)
+      .to({ opacity: 0.3 }, 4000)
+      .start()
     this.targets.push(target)
   }
 
   public clearTargets() {
-    this.targets.forEach(t => {
-      this.remove(t)
-    })
+    this.targets.forEach(t => this.remove(t))
     this.targets = []
   }
 
   private resize() {
     const { clientWidth, clientHeight } = this.el
-    this.camera.aspect = this.closeUpCamera.aspect = clientWidth / clientHeight
+    this.camera.aspect = clientWidth / clientHeight
     this.camera.updateProjectionMatrix()
-    this.closeUpCamera.updateProjectionMatrix()
+    // this.controlCamera.updateProjectionMatrix()
+    this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(clientWidth, clientHeight)
   }
 

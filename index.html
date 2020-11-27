@@ -17,17 +17,21 @@
     const playground = new Playground(playgrouneEl)
     
     playground.ready = () => {
+      // 是否显示帧率
       playground.stateShow = true
-    
-      const targets = Array(15).fill().map(item => new Target('', 0))
+
+      // 初始化了 41 个目标
+      const targets = Array(41).fill().map((item, i) => new Target('Target_' + i, i * 2 + 100))
       playground.setTargets(targets)
 
-      targets[5].status = 3
-      targets[2].status = 3
+      // 初始化 40 个队伍
+      const teams = Array(40).fill().map((item, i) => new Team('Team_' + i))
+      playground.setTeams(teams)
 
       setTimeout(() => {
-        targets[2].status = 2
-      }, 5000);
+        targets[5].status = 2
+        targets[20].status = 3
+      }, 5000)
     }
     
 
