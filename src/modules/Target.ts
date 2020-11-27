@@ -10,7 +10,7 @@ enum TargetStatus {
 }
 
 export class Target extends Object3D {
-  panel = new Panel()
+  panel: Panel
   lines: LineSegments
   mesh: Mesh
   light = new PointLight(0xff0000, 0.8, 400, 0.2)
@@ -31,6 +31,7 @@ export class Target extends Object3D {
     super()
     this.name = name
     this.score = score
+    this.panel = new Panel(this)
 
     // this.add(this.light)
 

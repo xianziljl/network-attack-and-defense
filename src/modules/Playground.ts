@@ -14,6 +14,7 @@ import Terrain from './Terrain'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
 import * as TWEEN from '@tweenjs/tween.js'
+import { Panel } from './Panel'
 
 export class Playground extends Scene {
   el: Element
@@ -49,8 +50,7 @@ export class Playground extends Scene {
       this.loadUI.innerHTML = `<div>LOADING... 0%</div>`
     }
     DefaultLoadingManager.onProgress = (url, loaded, total) => {
-      console.log(loaded, total)
-      this.loadUI.innerHTML = `<div>LOADING... ${ (loaded / total * 100).toFixed(2) }%</div>`
+      this.loadUI.innerHTML = `<div>LOADING... ${(loaded / total * 100).toFixed(2)}%</div>`
     }
 
     loadAssets((assets: Assets) => this.assets = assets)
@@ -79,6 +79,8 @@ export class Playground extends Scene {
     this.resize()
     this.camera.position.z = 1000
     this.camera.lookAt(0, 0, 0)
+    this.camera.updateProjectionMatrix()
+    this.camera.updateMatrixWorld(true)
     // 雾效果
     this.fog = new FogExp2(0x0f1022, 0.0005)
     // 灯光
@@ -154,14 +156,18 @@ export class Playground extends Scene {
     // }
 
     const self = this
+    Panel.camera = this.camera
+    Panel.renderer = this.renderer
     function animate(time) {
       requestAnimationFrame(animate)
       self.composer.render()
-      if (self.controls) self.controls.update()
       TWEEN.update()
+      Panel.update()
+      if (self.controls) self.controls.update()
       if (self.statsUI) self.statsUI.update()
     }
     requestAnimationFrame(animate)
+    console.log(Panel.instances)
 
     window.addEventListener('resize', this.resize.bind(this))
 
@@ -170,7 +176,6 @@ export class Playground extends Scene {
   }
 
   private initControls() {
-    console.log(this)
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     // this.controls.minDistance = 500
     // this.controls.maxDistance = 1600
