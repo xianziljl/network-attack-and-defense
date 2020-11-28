@@ -10,7 +10,7 @@
   <div class="playground"></div>
 
   <script type="module">
-    import { Playground, Target, Team, Panel, broadcast, MapGrid } from '/dist/dist.js'
+    import { Playground, Target, Team, Panel, broadcast, MapGrid, getRandom } from '/dist/dist.js'
 
     const playgrouneEl = document.querySelector('.playground')
     
@@ -25,13 +25,16 @@
       playground.setTargets(targets)
 
       // 初始化 40 个队伍
-      // const teams = Array(40).fill().map((item, i) => new Team('Team_' + i))
-      // playground.setTeams(teams)
+      const teams = Array(30).fill().map((item, i) => new Team('Team_' + i))
+      playground.setTeams(teams)
 
-      setTimeout(() => {
-        targets[19].status = 2
-        targets[10].status = 3
-      }, 5000)
+      function attack() {
+        setTimeout(() => {
+          teams[getRandom(0, 29)].toAttack(targets[getRandom(0, 28)], Math.random() > 0.5)
+          attack()
+        }, Math.random() * 8000)
+      }
+      attack()
     }
     
 

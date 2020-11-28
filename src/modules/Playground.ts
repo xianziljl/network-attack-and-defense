@@ -1,8 +1,9 @@
-import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CircleBufferGeometry, CircleGeometry, CubeTextureLoader, CylinderGeometry, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, DoubleSide, EdgesGeometry, FogExp2, ImageLoader, Line, LineBasicMaterial, LineSegments, Loader, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneGeometry, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CircleBufferGeometry, CircleGeometry, CubeTextureLoader, CylinderGeometry, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, DoubleSide, EdgesGeometry, FogExp2, Group, ImageLoader, Line, LineBasicMaterial, LineSegments, Loader, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneGeometry, Raycaster, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass"
+import { HueSaturationShader } from 'three/examples/jsm/shaders/HueSaturationShader'
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass"
 import { CopyShader } from 'three/examples/jsm/shaders/CopyShader'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
@@ -15,6 +16,7 @@ import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Panel } from './Panel'
+import { Bullet } from './Bullet'
 
 export class Playground extends Scene {
   el: Element
@@ -25,6 +27,8 @@ export class Playground extends Scene {
   renderScene: RenderPass
   composer: EffectComposer
   controls: OrbitControls
+  raycaster = new Raycaster()
+  teamModels = new Group()
 
   statsUI: Stats
   loadUI = document.createElement('div')
@@ -78,6 +82,7 @@ export class Playground extends Scene {
     this.el.appendChild(this.renderer.domElement)
     this.resize()
     this.camera.position.z = 1000
+    this.camera.position.y = -100
     this.camera.lookAt(0, 0, 0)
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
@@ -121,17 +126,21 @@ export class Playground extends Scene {
     this.composer = new EffectComposer(this.renderer)
     this.renderScene = new RenderPass(this, this.camera)
     this.composer.addPass(this.renderScene)
+
+    // const hue = new ShaderPass(HueSaturationShader)
+    // this.composer.addPass(hue)
     // 抗锯齿
     // const fxaaPass = new ShaderPass(FXAAShader)
     // this.composer.addPass(fxaaPass)
     // const pixelRatio = this.renderer.getPixelRatio()
 
-    // fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.el.offsetWidth * pixelRatio );
-    // fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.el.offsetHeight * pixelRatio );
+    // fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.el.clientWidth * pixelRatio)
+    // fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.el.clientHeight * pixelRatio)
+    // this.composer.addPass(fxaaPass)
 
     // 泛光效果
     const { clientWidth, clientHeight } = this.el
-    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 2, 1.2, 0.25) // 半径，强度，门槛
+    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 2, 1.2, 0.23) // 半径，强度，门槛
     this.composer.addPass(bloomPass)
 
     // 控制
@@ -155,24 +164,16 @@ export class Playground extends Scene {
     //   if (i > 0) this.add(sq)
     // }
 
-    const self = this
     Panel.camera = this.camera
     Panel.renderer = this.renderer
-    function animate(time) {
-      requestAnimationFrame(animate)
-      self.composer.render()
-      TWEEN.update()
-      Panel.update()
-      if (self.controls) self.controls.update()
-      if (self.statsUI) self.statsUI.update()
-    }
-    requestAnimationFrame(animate)
-    console.log(Panel.instances)
+    this.initControls()
+    requestAnimationFrame(this.animate.bind(this))
 
     window.addEventListener('resize', this.resize.bind(this))
 
+    console.log(Bullet.pool)
+
     // document.body.addEventListener('dblclick', this.startAnim.bind(this))
-    this.initControls()
   }
 
   private initControls() {
@@ -180,20 +181,31 @@ export class Playground extends Scene {
     // this.controls.minDistance = 500
     // this.controls.maxDistance = 1600
     this.controls.enabled = true
-    this.controls.autoRotate = true
+    // this.controls.autoRotate = true
     this.controls.autoRotateSpeed = 1
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
   }
 
   public setTeams(teams: Team[] = []) {
-    teams.forEach(team => {
-      this.add(team)
-    })
+    this.clearTeams()
+    teams.forEach(team => this.addTeam(team))
+    this.add(this.teamModels)
   }
 
+  public addTeam(team: Team) {
+    const index = this.teams.length + 1
+    const grid = this.mapGrid[index]
+    const { x, y } = grid
+    team.setModel(this.assets.aerobat)
+    team.position.set(x * this.gridSize + this.gridSize / 2, 300, y * this.gridSize + this.gridSize / 2)
+    this.teamModels.add(team)
+    this.teams.push(team)
+  }
   public clearTeams() {
-    // 
+    this.teams.forEach(t => this.teamModels.remove(t))
+    this.remove(this.teamModels)
+    this.teams = []
   }
 
   public setTargets(targets: Target[]) {
@@ -205,7 +217,7 @@ export class Playground extends Scene {
     const index = this.targets.length
     const grid = this.mapGrid[index]
     const { x, y, value } = grid
-    target.setBuilding(this.assets.building)
+    target.setBuilding(this.assets.building, this.gridSize)
     // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
@@ -256,5 +268,15 @@ export class Playground extends Scene {
   }
   get stateShow(): boolean {
     return !!this.statsUI
+  }
+
+  animate() {
+    requestAnimationFrame(this.animate.bind(this))
+    this.teamModels.rotation.y -= 0.006
+    this.controls.update()
+    TWEEN.update()
+    Panel.update()
+    this.composer.render()
+    if (this.statsUI) this.statsUI.update()
   }
 }
