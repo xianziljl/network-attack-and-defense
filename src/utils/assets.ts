@@ -35,7 +35,7 @@ export function loadAssets(cbk: Function) {
     assets.aerobat = obj.children[0] as Mesh
     callback()
   })
-  new TextureLoader().load('/assets/imgs/fire.png', texture => {
+  new TextureLoader().load('/assets/imgs/fire1.png', texture => {
     assets.fire = texture
     callback()
   })
