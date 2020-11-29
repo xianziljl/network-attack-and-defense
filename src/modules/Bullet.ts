@@ -1,8 +1,5 @@
-import { Tween } from '@tweenjs/tween.js'
-import { BoxBufferGeometry, Mesh, MeshBasicMaterial, Object3D, Scene, Vector3 } from 'three'
-import { Playground } from '..'
-import { Target } from './Target'
-import { Team } from './Team'
+import { Easing, Tween } from '@tweenjs/tween.js'
+import { BoxBufferGeometry, Mesh, MeshBasicMaterial, Object3D, Scene } from 'three'
 
 const mtl = new MeshBasicMaterial({ color: 0xffff00 })
 
@@ -30,6 +27,7 @@ export class Bullet extends Mesh {
     playground.add(bullet)
     new Tween(bullet.position)
       .to(ep, 1000)
+      .easing(Easing.Quadratic.In)
       .onComplete(() => {
         bullet.used = false
         playground.remove(bullet)

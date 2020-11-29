@@ -30,8 +30,14 @@
 
       function attack() {
         setTimeout(() => {
-          teams[getRandom(0, 29)].toAttack(targets[getRandom(0, 28)], Math.random() > 0.5)
+          const team = teams[getRandom(0, 29)]
+          const target = targets[getRandom(0, 28)]
+          const isSuccess = Math.random() > 0.5
+          team.toAttack(target, isSuccess)
           attack()
+          setTimeout(() => {
+            broadcast('KILL SPREE!!', `队伍 <span style="color:#fff">${team.name}</span> 连续攻破三题!`)
+          }, 1200)
         }, Math.random() * 8000)
       }
       attack()

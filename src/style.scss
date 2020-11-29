@@ -8,11 +8,11 @@ div{
 
 .broadcast{
   position: absolute;display: inline-block;
-  min-width: 300px;margin-left: -150px;left: 50%;top: 10%;white-space: nowrap;
+  width: 400px;margin-left: -200px;left: 50%;top: 10%;white-space: nowrap;
   padding: 20px;opacity: 1;background: rgba(#000, 0.6);
   text-align: center;color: #fff;
   transition: all .5s;transform: scale(1);
-  background: url(/assets/imgs/boardcast-bg.png) center / 100% 100%;
+  background: url(/assets/imgs/boardcast-bg1.png) center / 100% 100%;
   &.in{opacity: 0;transform: scale(1.5);}
   &.out{opacity: 0;transform: scale(0.5);}
   &-title{color: rgb(255, 69, 36);font-size: 26px;font-weight: bold;}

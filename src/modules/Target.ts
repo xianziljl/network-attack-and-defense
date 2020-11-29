@@ -1,8 +1,9 @@
-import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, Color, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper } from 'three'
+import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, Color, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper, Scene } from 'three'
 import { Panel } from './Panel'
 import { Team } from './Team'
 import { Tween } from '@tweenjs/tween.js'
 import { materials } from './materials'
+import { Fire } from './Fire'
 
 enum TargetStatus {
   normal = 1,
@@ -84,6 +85,14 @@ export class Target extends Object3D {
   get status(): TargetStatus {
     return this._status
   }
+  
+  private getScene(): Scene {
+    let scene = this.parent
+    while (scene && scene.type !== 'Scene') {
+      scene = scene.parent
+    }
+    return scene as Scene
+  }
 
   private setMaterial(mtlstr: string) {
     this.mesh.material = materials[mtlstr].mesh
@@ -95,6 +104,21 @@ export class Target extends Object3D {
   }
 
   public beAttack(team: Team, success: boolean) {
+    const fire = Fire.getOne()
+    fire.position.copy(this.position)
+    fire.scale.set(this.scale.x, this.scale.x, this.scale.x)
+    fire.position.y += Fire.size * this.scale.x / 3
+    const scene = this.getScene()
+    scene.add(fire)
+    fire.start()
+    const fire1 = Fire.getOne()
+    fire1.position.copy(fire.position)
+    fire1.scale.copy(fire.scale)
+    fire1.rotation.y = -Math.PI / 4
+    scene.add(fire1)
+    setTimeout(() => {
+      fire1.start()
+    }, 600)
     if (success) {
       this.status = 2
       if (!this.winTeams.includes(team)) this.winTeams.push(team)

@@ -17,6 +17,7 @@ import { Assets, loadAssets } from '../utils/assets'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Panel } from './Panel'
 import { Bullet } from './Bullet'
+import { Fire } from './Fire'
 
 export class Playground extends Scene {
   el: Element
@@ -63,6 +64,8 @@ export class Playground extends Scene {
       this.loadUI.innerHTML = ''
       this.loadUI.style.opacity = '0'
       setTimeout(() => this.el.removeChild(this.loadUI), 5000)
+
+      Fire.texture = this.assets.fire
 
       const building = this.assets.building
       const box = new Box3().setFromObject(building)
@@ -181,7 +184,7 @@ export class Playground extends Scene {
     // this.controls.minDistance = 500
     // this.controls.maxDistance = 1600
     this.controls.enabled = true
-    // this.controls.autoRotate = true
+    this.controls.autoRotate = true
     this.controls.autoRotateSpeed = 1
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
@@ -276,6 +279,7 @@ export class Playground extends Scene {
     this.controls.update()
     TWEEN.update()
     Panel.update()
+    Fire.update()
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
   }
