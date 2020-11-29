@@ -20,18 +20,21 @@
       // 是否显示帧率
       playground.stateShow = true
 
-      // 初始化了 41 个目标
-      const targets = Array(29).fill().map((item, i) => new Target('Target_' + i, i * 2 + 100))
+      const targetCount = 21
+      const teamCount = 8
+
+      // 初始化了目标
+      const targets = Array(targetCount).fill().map((item, i) => new Target('Target_' + i, i * 2 + 100))
       playground.setTargets(targets)
 
-      // 初始化 40 个队伍
-      const teams = Array(30).fill().map((item, i) => new Team('Team_' + i))
+      // 初始化队伍
+      const teams = Array(teamCount).fill().map((item, i) => new Team('Team_' + i))
       playground.setTeams(teams)
 
       function attack() {
         setTimeout(() => {
-          const team = teams[getRandom(0, 29)]
-          const target = targets[getRandom(0, 28)]
+          const team = teams[getRandom(0, teamCount - 1)]
+          const target = targets[getRandom(0, targetCount - 1)]
           const isSuccess = Math.random() > 0.5
           team.toAttack(target, isSuccess)
           attack()

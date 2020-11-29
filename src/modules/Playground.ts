@@ -240,7 +240,7 @@ export class Playground extends Scene {
     lineMtl.opacity = 1
     new TWEEN.Tween(lineMtl)
       .delay((index + 1) * 100 + 3000)
-      .to({ opacity: 0.3 }, 4000)
+      .to({ opacity: 0.3 }, 2500)
       .start()
     this.targets.push(target)
   }

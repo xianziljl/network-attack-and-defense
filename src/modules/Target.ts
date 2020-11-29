@@ -106,8 +106,8 @@ export class Target extends Object3D {
   public beAttack(team: Team, success: boolean) {
     const fire = Fire.getOne()
     fire.position.copy(this.position)
-    fire.scale.set(this.scale.x, this.scale.x, this.scale.x)
-    fire.position.y += Fire.size * this.scale.x / 3
+    fire.scale.set(this.scale.x, this.scale.y * 1.5, this.scale.z)
+    fire.position.y += Fire.size * this.scale.y / 3
     const scene = this.getScene()
     scene.add(fire)
     fire.start()
