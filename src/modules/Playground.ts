@@ -14,7 +14,7 @@ import { Team } from './team'
 import Terrain from './Terrain'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
-import * as TWEEN from '@tweenjs/tween.js'
+import { Tween, Easing, update as TweenUpdate} from '@tweenjs/tween.js'
 import { Panel } from './Panel'
 import { Bullet } from './Bullet'
 import { Fire } from './Fire'
@@ -231,14 +231,14 @@ export class Playground extends Scene {
     }
     this.add(target)
     const p = target.position
-    new TWEEN.Tween(p)
+    new Tween(p)
       .delay((index + 1) * 50)
       .to({ x: p.x, y: -300, z: p.z }, 2500)
-      .easing(TWEEN.Easing.Quadratic.Out)
+      .easing(Easing.Quadratic.Out)
       .start()
     const lineMtl = target.lines.material as Material
     lineMtl.opacity = 1
-    new TWEEN.Tween(lineMtl)
+    new Tween(lineMtl)
       .delay((index + 1) * 100 + 3000)
       .to({ opacity: 0.3 }, 2500)
       .start()
@@ -277,7 +277,7 @@ export class Playground extends Scene {
     requestAnimationFrame(this.animate.bind(this))
     this.teamModels.rotation.y -= 0.006
     this.controls.update()
-    TWEEN.update()
+    TweenUpdate()
     Panel.update()
     Fire.update()
     this.composer.render()
