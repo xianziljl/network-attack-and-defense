@@ -1,5 +1,5 @@
-import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, Color, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper, Scene } from 'three'
-import { Panel } from './Panel'
+import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, BufferGeometry, Color, EdgesGeometry, Geometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper, Scene } from 'three'
+import { Panel, TargetPanel } from './Panel'
 import { Team } from './Team'
 import { Tween } from '@tweenjs/tween.js'
 import { materials } from './materials'
@@ -15,7 +15,7 @@ const colorRed = new Color(0xff0000)
 const colorBlue = new Color(0x0020ff)
 
 export class Target extends Object3D {
-  panel: Panel
+  panel: TargetPanel
   lines: LineSegments
   box: Mesh
   mesh: Mesh
@@ -33,18 +33,18 @@ export class Target extends Object3D {
     super()
     this.name = name
     this.score = score
-    this.panel = new Panel(this, { y: 200 })
+    const panel = new TargetPanel(this, { y: 200 })
+    this.panel = panel
   }
 
-  public setBuilding(mesh: Mesh, size: number) {
-    mesh.material = materials.normal.mesh
-    const ms = mesh.clone()
+  public setBuilding(geometry: BufferGeometry | Geometry, size: number) {
+    const ms = new Mesh(geometry, materials.normal.mesh)
     this.add(ms)
     this.mesh = ms
 
-    const edges = new EdgesGeometry(mesh.geometry)
+    const edges = new EdgesGeometry(ms.geometry)
     const lines = new LineSegments(edges, materials.normal.line)
-    lines.scale.set(mesh.scale.x, mesh.scale.y, mesh.scale.z)
+    lines.scale.set(ms.scale.x, ms.scale.y, ms.scale.z)
     this.add(lines)
     this.lines = lines
 
@@ -116,11 +116,16 @@ export class Target extends Object3D {
     fire1.scale.copy(fire.scale)
     fire1.rotation.y = -Math.PI / 4
     scene.add(fire1)
+    this.panel.type = 2 // 显示详情
+    setTimeout(() => {
+      this.panel.type = 1
+    }, 5000)
     setTimeout(() => {
       fire1.start()
     }, 600)
     if (success) {
       this.status = 2
+      this.panel.addItem(team.name)
       if (!this.winTeams.includes(team)) this.winTeams.push(team)
     } else {
       this.status = 3

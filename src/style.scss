@@ -37,9 +37,27 @@ div{
   position: absolute;user-select: none;transform-origin: bottom;
   transition: transform .3s, opacity .3s;will-change: left;width: 0;height: 0;
   display: flex;justify-content: center;align-items: flex-end;overflow: visible;
-  &-content{
-    background-color: rgba(#000, 0.6);border: 1px solid rgba(#fff, 0.2);
-    padding: 5px 10px;
+  white-space: nowrap;color: rgba(#fff, 0.8);
+  // &-content{height: ;}
+  &-team{padding: 5px 10px;background: url('/assets/imgs/team-bg.png') center / 100% 100%;}
+  &-target{
+    overflow: hidden;
+    min-width: 180px;width: 180px;height: 52px;transition: height .3s, width .3s;
+    padding: 10px;background: url('/assets/imgs/target-bg.png') center / 100% 100% rgba(#020b1e, 0.5);
+    &-title{
+      display: flex;font-size: 16px;font-weight: bold;padding: 8px;
+      .name{flex: 1;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+    }
+    &-item{
+      display: flex;padding: 8px;border-bottom: 1px solid rgba(255, 52, 52, 0.1);
+      .top{margin-right: 15px;opacity: 0.6;}
+      .tname{flex: 1;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+    }
+    &-type-2{
+      color: #ff3434;height: 180px;width: 240px;
+      background: url('/assets/imgs/target-bg-1.png') center / 100% 100% rgba(#020b1e, 0.5);
+      .panel-target-title{border-bottom: 1px solid rgba(255, 52, 52, 0.2);}
+    }
   }
   // &>div{position: absolute;bottom: 0;}
 }

@@ -1,7 +1,8 @@
 import { Easing, Tween } from '@tweenjs/tween.js'
 import { BoxBufferGeometry, Mesh, MeshBasicMaterial, Object3D, Scene } from 'three'
 
-const mtl = new MeshBasicMaterial({ color: 0xffff00 })
+const g = new BoxBufferGeometry(3, 3, 30)
+const m = new MeshBasicMaterial({ color: 0xffff00 })
 
 export class Bullet extends Mesh {
   static pool: Bullet[] = []
@@ -9,8 +10,7 @@ export class Bullet extends Mesh {
   public used: boolean
 
   constructor() {
-    const g = new BoxBufferGeometry(3, 3, 30)
-    super(g, mtl)
+    super(g, m)
     this.used = false
     Bullet.pool.push(this)
   }
@@ -27,7 +27,7 @@ export class Bullet extends Mesh {
     playground.add(bullet)
     new Tween(bullet.position)
       .to(ep, 1000)
-      .easing(Easing.Quadratic.In)
+      // .easing(Easing.Quadratic.In)
       .onComplete(() => {
         bullet.used = false
         playground.remove(bullet)

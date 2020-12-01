@@ -8,63 +8,61 @@
 </head>
 <body>
   <div class="playground"></div>
+  <div style="position: absolute;bottom: 0;left: 0;z-index: 1000;font-size: 12px;padding: 5px;">
+    <div>team: <span id="t"></span></div>
+    <div>target: <span id="ta"></span></div>
+    <div>bullet: <span id="b"></span></div>
+    <div>fire: <span id="f"></span></div>
+  </div>
 
   <script type="module">
-    import { Playground, Target, Team, Panel, broadcast, MapGrid, getRandom } from '/dist/dist.js'
+    import { Playground, Target, Team, Panel } from '/dist/dist.js'
+
+    // 取随机数
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
 
     const playgrouneEl = document.querySelector('.playground')
-    
     const playground = new Playground(playgrouneEl)
     
     playground.ready = () => {
       // 是否显示帧率
       playground.stateShow = true
 
-      const targetCount = 21
-      const teamCount = 8
+      const targetCount = 2
+      const teamCount = 1
 
       // 初始化了目标
-      const targets = Array(targetCount).fill().map((item, i) => new Target('Target_' + i, i * 2 + 100))
+      const targets = Array(targetCount).fill().map((_, i) => new Target('目标_' + i, i * 2 + 100))
       playground.setTargets(targets)
 
       // 初始化队伍
-      const teams = Array(teamCount).fill().map((item, i) => new Team('Team_' + i))
+      const teams = Array(teamCount).fill().map((_, i) => new Team('天枢战队-' + i))
       playground.setTeams(teams)
 
-      function attack() {
-        setTimeout(() => {
-          const team = teams[getRandom(0, teamCount - 1)]
-          const target = targets[getRandom(0, targetCount - 1)]
-          const isSuccess = Math.random() > 0.5
-          team.toAttack(target, isSuccess)
-          attack()
-          setTimeout(() => {
-            broadcast('KILL SPREE!!', `队伍 <span style="color:#fff">${team.name}</span> 连续攻破三题!`)
-          }, 1200)
-        }, Math.random() * 8000)
+      // setTimeout(randomAttack, 5000) // 随机攻击
+
+      function randomAttack() {
+        const team = teams[getRandom(0, teamCount - 1)]
+        const target = targets[getRandom(0, targetCount - 1)]
+        const isSuccess = Math.random() > 0.5
+        team.toAttack(target, isSuccess)
+        
+        // setTimeout(randomAttack, Math.random() * 8000)
       }
-      attack()
+
+      // document.addEventListener('dblclick', randomAttack)
+      teams.forEach(t => {
+        t.panel.content.addEventListener('click', () => {
+          // console.log(t)
+          t.toAttack(targets[getRandom(0, targetCount - 1)], Math.random() > 0.5)
+        })
+      })
     }
     
-
     console.log(playground)
-    
-    // const teams = []
-    // const targets = []
-    // for (const i = 0; i < 9; i++) {
-    //   teams.push(new Team('team' + (i + 1)))
-    // }
-    // playground.setTeams(teams)
-
-    // for (const i = 0; i < 6; i++) {
-    //   targets.push(new Target('target' + (i + 1)))
-    // }
-    // playground.setTargets(targets)
-
-    
-    // document.body.addEventListener('click', () => {
-    //   broadcast('KILL SPREE!!', '队伍 <span style="color:#fff">The_Sky</span> 连续攻破三题!')
-    // })
+  
   </script>
 </body>
 </html>

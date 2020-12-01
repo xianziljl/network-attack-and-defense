@@ -1,4 +1,4 @@
-import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CircleBufferGeometry, CircleGeometry, CubeTextureLoader, CylinderGeometry, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, DoubleSide, EdgesGeometry, FogExp2, Group, ImageLoader, Line, LineBasicMaterial, LineSegments, Loader, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneGeometry, Raycaster, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AxesHelper, Box3, BoxGeometry, BoxHelper, CircleBufferGeometry, CircleGeometry, CubeTextureLoader, CylinderGeometry, DefaultLoadingManager, DirectionalLight, DirectionalLightHelper, DoubleSide, EdgesGeometry, FogExp2, Group, ImageLoader, Line, LineBasicMaterial, LineSegments, Loader, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, PerspectiveCamera, PlaneGeometry, PointLight, PointLightHelper, Raycaster, Scene, SpotLight, SpotLightHelper, Vector2, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer"
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass"
@@ -58,27 +58,34 @@ export class Playground extends Scene {
       this.loadUI.innerHTML = `<div>LOADING... ${(loaded / total * 100).toFixed(2)}%</div>`
     }
 
-    loadAssets((assets: Assets) => this.assets = assets)
-
-    DefaultLoadingManager.onLoad = () => {
+    console.log('load assets')
+    loadAssets((assets: Assets) => {
+      console.log('assets:', assets)
+      this.assets = assets
+      
       this.loadUI.innerHTML = ''
       this.loadUI.style.opacity = '0'
       setTimeout(() => this.el.removeChild(this.loadUI), 5000)
 
-      Fire.texture = this.assets.fire
+      Fire.texture = assets.fire
 
-      const building = this.assets.building
+      const building = assets.building
+      const buildingGeometry = building.geometry
       const box = new Box3().setFromObject(building)
       const boxSize = box.getSize(new Vector3())
       // 缩放到正方形
       if (boxSize.x !== boxSize.y) {
-        building.scale.x = this.gridSize / boxSize.x
-        building.scale.y = this.gridSize / boxSize.y
-        building.scale.z = this.gridSize / boxSize.z
+        const scale = new Matrix4().makeScale(this.gridSize / boxSize.x, this.gridSize / boxSize.y, this.gridSize / boxSize.z)
+        buildingGeometry.applyMatrix4(scale)
       }
-      this.init(this.assets)
+
+      // assets.aerobat.material = new MeshPhongMaterial({
+      //   color: 0x888888,
+      //   normalMap: assets.aerobatMormalMap
+      // })
+      this.init(assets)
       if (typeof this.ready === 'function') this.ready()
-    }
+    })
   }
 
   private init(assets: Assets) {
@@ -93,11 +100,16 @@ export class Playground extends Scene {
     this.fog = new FogExp2(0x0f1022, 0.0005)
     // 灯光
     this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
-    const dirLight = new DirectionalLight(0xffffff, 0.2)
+    const dirLight = new DirectionalLight(0xffffff, 0.3)
     dirLight.position.set(1500, 800, 3000)
-    // spotLight.castShadow = true
     this.add(dirLight)
-    // this.add(new DirectionalLightHelper(dirLight, 0xaaaaaa))
+    this.add(new DirectionalLightHelper(dirLight, 0xaaaaaa))
+
+    // const spotLight = new PointLight(0xffffff, 1, 1000)
+    // spotLight.position.set(0, 600, 0)
+    // this.add(spotLight)
+    // this.add(new PointLightHelper(spotLight, 30, 0xffff00))
+    // spotLight.lookAt(0, 1000, 0)
 
     // 天空盒
     this.background = assets.cubeTexture
@@ -184,7 +196,7 @@ export class Playground extends Scene {
     // this.controls.minDistance = 500
     // this.controls.maxDistance = 1600
     this.controls.enabled = true
-    this.controls.autoRotate = true
+    // this.controls.autoRotate = true
     this.controls.autoRotateSpeed = 1
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
@@ -195,7 +207,6 @@ export class Playground extends Scene {
     teams.forEach(team => this.addTeam(team))
     this.add(this.teamModels)
   }
-
   public addTeam(team: Team) {
     const index = this.teams.length + 1
     const grid = this.mapGrid[index]
@@ -220,7 +231,7 @@ export class Playground extends Scene {
     const index = this.targets.length
     const grid = this.mapGrid[index]
     const { x, y, value } = grid
-    target.setBuilding(this.assets.building, this.gridSize)
+    target.setBuilding(this.assets.building.geometry, this.gridSize)
     // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
@@ -275,12 +286,17 @@ export class Playground extends Scene {
 
   animate() {
     requestAnimationFrame(this.animate.bind(this))
-    this.teamModels.rotation.y -= 0.006
+    // this.teamModels.rotation.y -= 0.006
     this.controls.update()
     TweenUpdate()
     Panel.update()
     Fire.update()
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
+
+    document.getElementById('b').innerText = Bullet.pool.length.toString()
+    document.getElementById('f').innerText = Fire.pool.length.toString()
+    document.getElementById('t').innerText = this.teams.length.toString()
+    document.getElementById('ta').innerText = this.targets.length.toString()
   }
 }
