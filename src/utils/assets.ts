@@ -6,7 +6,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 export interface Assets {
-  building?: Mesh,
+  buildings?: Mesh[],
   aerobat?: Mesh,
   aerobatMormalMap?: Texture
   heightimg?: HTMLImageElement,
@@ -17,7 +17,7 @@ export interface Assets {
 export function loadAssets(cbk: Function) {
   const assets: Assets = {}
 
-  let count = 5
+  let count = 9
 
   function callback() {
     count -= 1
@@ -34,42 +34,39 @@ export function loadAssets(cbk: Function) {
     assets.cubeTexture = cubeTexture
     callback()
   })
-  new OBJLoader2().load('/assets/models/building-5.obj', obj => {
-    assets.building = obj.children[0] as Mesh
+  new OBJLoader2().load('/assets/models/2.obj', obj => {
+    if (!assets.buildings) assets.buildings = []
+    assets.buildings.push(obj.children[0] as Mesh)
+    callback()
+  })
+  new OBJLoader2().load('/assets/models/3.obj', obj => {
+    if (!assets.buildings) assets.buildings = []
+    assets.buildings.push(obj.children[0] as Mesh)
+    callback()
+  })
+  new OBJLoader2().load('/assets/models/4.obj', obj => {
+    if (!assets.buildings) assets.buildings = []
+    assets.buildings.push(obj.children[0] as Mesh)
+    callback()
+  })
+  new OBJLoader2().load('/assets/models/5.obj', obj => {
+    if (!assets.buildings) assets.buildings = []
+    assets.buildings.push(obj.children[0] as Mesh)
+    callback()
+  })
+  new OBJLoader2().load('/assets/models/6.obj', obj => {
+    if (!assets.buildings) assets.buildings = []
+    assets.buildings.push(obj.children[0] as Mesh)
     callback()
   })
   new TextureLoader().load('/assets/imgs/fire1.png', texture => {
     assets.fire = texture
     callback()
   })
-  new GLTFLoader().load('/assets/models/CBc1_T1(1).gltf', gltf => {
-    // gltf.scene.traverse(null)
+  new GLTFLoader().load('/assets/models/aerobat.gltf', gltf => {
     const mesh = gltf.scene.children[0].children[0] as Mesh
     assets.aerobat = mesh
-    // const mesh = gltf.scene.children[0] as Mesh
-    // const mtl = mesh.material as MeshStandardMaterial
-    // mtl.blending = AdditiveBlending
-    // // mtl.map.encoding = LinearEncoding
-    // console.log(mesh)
-    
-    // assets.aerobat = mesh
     callback()
   })
-  // new TextureLoader().load('/assets/models/Cbc1_T1_N.tga', t => {
-  //   assets.aerobatMormalMap = t
-  //   callback()
-  // })
-  // new OBJLoader2().load('/assets/models/aerobat.obj', obj => {
-  //   assets.aerobat = obj.children[0] as Mesh
-  //   callback()
-  // })
-  // new MTLLoader().load('/assets/models/aerobat.mtl', mtls => {
-  //   mtls.preload()
-  //   const objLoader = new OBJLoader()
-  //   objLoader.setMaterials(mtls)
-  //   objLoader.load('/assets/models/aerobat.obj', obj => {
-  //     assets.aerobat = obj.children[0] as Mesh
-  //     callback()
-  //   })
-  // })
+  // new OBJLoader2().load('/assets/models/bui')
 }

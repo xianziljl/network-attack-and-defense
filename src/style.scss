@@ -41,9 +41,10 @@ div{
   // &-content{height: ;}
   &-team{padding: 5px 10px;background: url('/assets/imgs/team-bg.png') center / 100% 100%;}
   &-target{
-    overflow: hidden;
+    overflow: hidden;opacity: 0.5;
     min-width: 180px;width: 180px;height: 52px;transition: height .3s, width .3s;
     padding: 10px;background: url('/assets/imgs/target-bg.png') center / 100% 100% rgba(#020b1e, 0.5);
+    &:hover{opacity: 1;}
     &-title{
       display: flex;font-size: 16px;font-weight: bold;padding: 8px;
       .name{flex: 1;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
@@ -54,7 +55,7 @@ div{
       .tname{flex: 1;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
     }
     &-type-2{
-      color: #ff3434;height: 180px;width: 240px;
+      color: #ff3434;height: 180px;width: 240px;opacity: 1;
       background: url('/assets/imgs/target-bg-1.png') center / 100% 100% rgba(#020b1e, 0.5);
       .panel-target-title{border-bottom: 1px solid rgba(255, 52, 52, 0.2);}
     }

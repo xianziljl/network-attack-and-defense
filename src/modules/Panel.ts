@@ -40,7 +40,7 @@ export class Panel {
     Panel.instances.forEach(p => p.update())
   }
 
-  private update() {
+  public update() {
     const p = this.obj.position.clone()
     p.applyMatrix4(this.obj.parent.matrixWorld)
     const distance = Panel.camera.position.distanceTo(p)
@@ -100,8 +100,17 @@ export class TargetPanel extends Panel {
   set type(type: 1 | 2) {
     this.content.classList.remove(`panel-target-type-${type === 1 ? 2 : 1}`)
     this.content.classList.add(`panel-target-type-${type}`)
+    this._type = type
   }
   get type() {
     return this._type
+  }
+
+  update() {
+    super.update()
+    if (this._type === 2) {
+      this.el.style.opacity = '1'
+      this.el.style.transform = 'scale(1)'
+    }
   }
 }

@@ -9,10 +9,10 @@
 <body>
   <div class="playground"></div>
   <div style="position: absolute;bottom: 0;left: 0;z-index: 1000;font-size: 12px;padding: 5px;">
-    <div>team: <span id="t"></span></div>
+    <!-- <div>team: <span id="t"></span></div>
     <div>target: <span id="ta"></span></div>
     <div>bullet: <span id="b"></span></div>
-    <div>fire: <span id="f"></span></div>
+    <div>fire: <span id="f"></span></div> -->
   </div>
 
   <script type="module">
@@ -28,10 +28,10 @@
     
     playground.ready = () => {
       // 是否显示帧率
-      playground.stateShow = true
+      // playground.stateShow = true
 
-      const targetCount = 2
-      const teamCount = 1
+      const targetCount = 20
+      const teamCount = 20
 
       // 初始化了目标
       const targets = Array(targetCount).fill().map((_, i) => new Target('目标_' + i, i * 2 + 100))

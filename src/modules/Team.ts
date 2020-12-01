@@ -49,10 +49,6 @@ export class Team extends Object3D {
     _obj.position.y = -5
     const mtl = _obj.material as MeshStandardMaterial
     mtl.color.set(0x888888)
-    // ms.material = new MeshLambertMaterial({ color: 0x00ff00 })
-    const light = new PointLight(0x0060ff, 1, 300, 1)
-    light.position.y = -60
-    this.add(light)
     this.add(_obj)
     this.lookAt(0, 0, 0)
   }

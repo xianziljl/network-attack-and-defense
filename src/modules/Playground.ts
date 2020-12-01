@@ -18,6 +18,7 @@ import { Tween, Easing, update as TweenUpdate} from '@tweenjs/tween.js'
 import { Panel } from './Panel'
 import { Bullet } from './Bullet'
 import { Fire } from './Fire'
+import { getRandom } from '../utils/getRandom'
 
 export class Playground extends Scene {
   el: Element
@@ -69,15 +70,16 @@ export class Playground extends Scene {
 
       Fire.texture = assets.fire
 
-      const building = assets.building
-      const buildingGeometry = building.geometry
-      const box = new Box3().setFromObject(building)
-      const boxSize = box.getSize(new Vector3())
-      // 缩放到正方形
-      if (boxSize.x !== boxSize.y) {
-        const scale = new Matrix4().makeScale(this.gridSize / boxSize.x, this.gridSize / boxSize.y, this.gridSize / boxSize.z)
-        buildingGeometry.applyMatrix4(scale)
-      }
+      assets.buildings.forEach(building => {
+        const buildingGeometry = building.geometry
+        const box = new Box3().setFromObject(building)
+        const boxSize = box.getSize(new Vector3())
+        // 缩放到正方形
+        if (boxSize.x !== boxSize.y) {
+          const scale = new Matrix4().makeScale(this.gridSize / boxSize.x, this.gridSize / boxSize.y, this.gridSize / boxSize.z)
+          buildingGeometry.applyMatrix4(scale)
+        }
+      })
 
       // assets.aerobat.material = new MeshPhongMaterial({
       //   color: 0x888888,
@@ -103,13 +105,16 @@ export class Playground extends Scene {
     const dirLight = new DirectionalLight(0xffffff, 0.3)
     dirLight.position.set(1500, 800, 3000)
     this.add(dirLight)
-    this.add(new DirectionalLightHelper(dirLight, 0xaaaaaa))
+    // this.add(new DirectionalLightHelper(dirLight, 0xaaaaaa))
 
-    // const spotLight = new PointLight(0xffffff, 1, 1000)
-    // spotLight.position.set(0, 600, 0)
-    // this.add(spotLight)
-    // this.add(new PointLightHelper(spotLight, 30, 0xffff00))
-    // spotLight.lookAt(0, 1000, 0)
+    const plight1 = new PointLight(0x0090ff, 2, 1000)
+    const plight2 = new PointLight(0x00d2ff, 1, 1000)
+    plight1.position.set(600, 400, 0)
+    plight2.position.set(-600, 400, 0)
+    this.add(plight1, plight2)
+    // this.add(new PointLightHelper(plight1, 30), new PointLightHelper(plight2, 30))
+    // plight1.lookAt(0, 500, 0)
+    // plight1.lookAt(0, 500, 0)
 
     // 天空盒
     this.background = assets.cubeTexture
@@ -155,7 +160,7 @@ export class Playground extends Scene {
 
     // 泛光效果
     const { clientWidth, clientHeight } = this.el
-    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 2, 1.2, 0.23) // 半径，强度，门槛
+    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 1, 1.2, 0.23) // 半径，强度，门槛
     this.composer.addPass(bloomPass)
 
     // 控制
@@ -196,7 +201,7 @@ export class Playground extends Scene {
     // this.controls.minDistance = 500
     // this.controls.maxDistance = 1600
     this.controls.enabled = true
-    // this.controls.autoRotate = true
+    this.controls.autoRotate = true
     this.controls.autoRotateSpeed = 1
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
@@ -231,7 +236,8 @@ export class Playground extends Scene {
     const index = this.targets.length
     const grid = this.mapGrid[index]
     const { x, y, value } = grid
-    target.setBuilding(this.assets.building.geometry, this.gridSize)
+    const i = getRandom(0, this.assets.buildings.length - 1)
+    target.setBuilding(this.assets.buildings[i].geometry, this.gridSize)
     // target.setBox(this.gridSize, this.gridSize)
     if (index === 0) {
       target.scale.set(2, 1.5, 2)
@@ -248,7 +254,7 @@ export class Playground extends Scene {
       .easing(Easing.Quadratic.Out)
       .start()
     const lineMtl = target.lines.material as Material
-    lineMtl.opacity = 1
+    lineMtl.opacity = 0.5
     new Tween(lineMtl)
       .delay((index + 1) * 100 + 3000)
       .to({ opacity: 0.3 }, 2500)
@@ -286,7 +292,7 @@ export class Playground extends Scene {
 
   animate() {
     requestAnimationFrame(this.animate.bind(this))
-    // this.teamModels.rotation.y -= 0.006
+    this.teamModels.rotation.y -= 0.006
     this.controls.update()
     TweenUpdate()
     Panel.update()
@@ -294,9 +300,9 @@ export class Playground extends Scene {
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
 
-    document.getElementById('b').innerText = Bullet.pool.length.toString()
-    document.getElementById('f').innerText = Fire.pool.length.toString()
-    document.getElementById('t').innerText = this.teams.length.toString()
-    document.getElementById('ta').innerText = this.targets.length.toString()
+    // document.getElementById('b').innerText = Bullet.pool.length.toString()
+    // document.getElementById('f').innerText = Fire.pool.length.toString()
+    // document.getElementById('t').innerText = this.teams.length.toString()
+    // document.getElementById('ta').innerText = this.targets.length.toString()
   }
 }
