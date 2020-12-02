@@ -23,8 +23,8 @@ import { getRandom } from '../utils/getRandom'
 export class Playground extends Scene {
   el: Element
 
-  camera = new PerspectiveCamera(50, 1, 0.1, 5000)
-  focusCamera = new PerspectiveCamera(70, 1, 0.1, 5000) // 特写相机
+  camera = new PerspectiveCamera(72, 1, 0.1, 5000)
+  focusCamera = new PerspectiveCamera(55, 1, 0.1, 5000) // 特写相机
   renderer = new WebGLRenderer({ antialias: false })
   renderScene: RenderPass
   focusScene: RenderPass
