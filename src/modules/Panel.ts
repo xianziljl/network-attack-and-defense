@@ -42,7 +42,7 @@ export class Panel {
 
   public update() {
     const p = this.obj.position.clone()
-    p.applyMatrix4(this.obj.parent.matrixWorld)
+    this.obj.getWorldPosition(p)
     const distance = Panel.camera.position.distanceTo(p)
 
     p.y += (this.offset.y * this.obj.scale.y)
@@ -52,7 +52,7 @@ export class Panel {
     v.y = -(v.y - 1) / 2 * window.innerHeight
     
     let style = `left: ${v.x}px;top: ${v.y}px;`
-    if (distance > 1200) style += `transform: scale(0);opacity: 0;`
+    if (distance > 1200 || distance <= 0) style += `transform: scale(0);opacity: 0;`
     else style += `transform: scale(1);opacity: 1;`
 
     this.el.setAttribute('style', style)

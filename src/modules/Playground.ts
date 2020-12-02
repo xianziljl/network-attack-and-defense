@@ -23,10 +23,12 @@ import { getRandom } from '../utils/getRandom'
 export class Playground extends Scene {
   el: Element
 
-  camera = new PerspectiveCamera(70, 1, 0.1, 5000)
-  controlCamera = new PerspectiveCamera(70, 1, 0.1, 5000) // 特写相机
+  camera = new PerspectiveCamera(60, 1, 0.1, 5000)
+  focusCamera = new PerspectiveCamera(70, 1, 0.1, 5000) // 特写相机
   renderer = new WebGLRenderer({ antialias: false })
   renderScene: RenderPass
+  focusScene: RenderPass
+  bloomPass: UnrealBloomPass
   composer: EffectComposer
   controls: OrbitControls
   raycaster = new Raycaster()
@@ -35,6 +37,8 @@ export class Playground extends Scene {
   statsUI: Stats
   loadUI = document.createElement('div')
 
+  focusTeam: Team
+  isFocus = false
   mapGrid = new MapGrid()
   gridSize = 200
   teams: Team[] = []
@@ -141,35 +145,23 @@ export class Playground extends Scene {
     terrain.scale.set(60, 500, 60)
     this.add(terrain)
 
-    // 后期处理
     this.renderer.autoClear = false
     this.composer = new EffectComposer(this.renderer)
+
     this.renderScene = new RenderPass(this, this.camera)
-    this.composer.addPass(this.renderScene)
-
-    // const hue = new ShaderPass(HueSaturationShader)
-    // this.composer.addPass(hue)
-    // 抗锯齿
-    // const fxaaPass = new ShaderPass(FXAAShader)
-    // this.composer.addPass(fxaaPass)
-    // const pixelRatio = this.renderer.getPixelRatio()
-
-    // fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.el.clientWidth * pixelRatio)
-    // fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.el.clientHeight * pixelRatio)
-    // this.composer.addPass(fxaaPass)
-
+    this.focusScene = new RenderPass(this, this.focusCamera)
     // 泛光效果
-    const { clientWidth, clientHeight } = this.el
-    const bloomPass = new UnrealBloomPass(new Vector2(clientWidth, clientHeight), 1, 1.2, 0.23) // 半径，强度，门槛
-    this.composer.addPass(bloomPass)
+    this.bloomPass = new UnrealBloomPass(new Vector2(this.el.clientWidth, this.el.clientHeight), 1, 1.2, 0.23) // 半径，强度，门槛
+    this.composer.passes = [this.renderScene, this.bloomPass]
 
-    // 控制
-
-    // 测试盒子
-    // const geometry = new BoxGeometry(10, 10, 10)
-    // const mt = new MeshBasicMaterial({ color: 0x00ff00 })
-    // const cube = new Mesh(geometry, mt)
-    // this.add(cube)
+    // window.addEventListener('mousedown', e => {
+    //   console.log(1)
+    //   this.composer.passes = [this.focusScene, this.bloomPass]
+    // })
+    // window.addEventListener('mouseup', e => {
+    //   console.log(2)
+    //   this.composer.passes = [this.renderScene, this.bloomPass]
+    // })
 
     // 地图辅助网格
     // const square = new PlaneGeometry(this.gridSize, this.gridSize)
@@ -297,12 +289,33 @@ export class Playground extends Scene {
     TweenUpdate()
     Panel.update()
     Fire.update()
+    if (this.focusTeam) this.updateFocusCamera()
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
+  }
+  
+  focus(team: Team) {
+    if (!team || this.isFocus || this.focusTeam) return
+    this.isFocus = true
+    this.focusTeam = team
+    Panel.camera = this.focusCamera
+    this.composer.passes = [this.focusScene, this.bloomPass]
+  }
 
-    // document.getElementById('b').innerText = Bullet.pool.length.toString()
-    // document.getElementById('f').innerText = Fire.pool.length.toString()
-    // document.getElementById('t').innerText = this.teams.length.toString()
-    // document.getElementById('ta').innerText = this.targets.length.toString()
+  unFocus() {
+    Panel.camera = this.camera
+    this.composer.passes = [this.renderScene, this.bloomPass]
+    this.focusTeam = null
+    setTimeout(() => {
+      this.isFocus = false
+    }, 1000)
+  }
+  updateFocusCamera() {
+    const { focusTeam, focusCamera } = this
+    if (!focusTeam || !focusTeam.target) return
+    const p = focusTeam.position.clone()
+    focusTeam.getWorldPosition(p)
+    focusCamera.position.set(p.x, p.y + 100, p.z)
+    focusCamera.lookAt(focusTeam.target.position)
   }
 }

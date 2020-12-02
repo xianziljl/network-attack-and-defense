@@ -3,6 +3,7 @@ import { BoxGeometry, Group, LineSegments, Material, Mesh, MeshBasicMaterial, Me
 import { broadcast } from '../utils/broadcast'
 import { Bullet } from './Bullet'
 import { Panel, TeamPanel } from './Panel'
+import { Playground } from './Playground'
 import { Target } from './Target'
 
 function loop(option: { interval: number, times: number, callback: Function, onStart?: Function, onEnd?: Function }) {
@@ -33,6 +34,7 @@ export class Team extends Object3D {
 
   panel: TeamPanel
   box: LineSegments
+  obj: Mesh
 
   winRecords: string[] = []
 
@@ -50,18 +52,20 @@ export class Team extends Object3D {
     const mtl = _obj.material as MeshStandardMaterial
     mtl.color.set(0x888888)
     this.add(_obj)
+    this.obj = obj
     this.lookAt(0, 0, 0)
   }
 
-  private getScene(): Scene {
+  private getScene(): Playground {
     let scene = this.parent
     while (scene && scene.type !== 'Scene') {
       scene = scene.parent
     }
-    return scene as Scene
+    return scene as Playground
   }
 
   private startAttack() {
+    this.getScene().focus(this)
     this.lookAt(this.target.position)
     const toRotate = { x: this.rotation.x, y: this.rotation.y, z: this.rotation.z }
     this.rotation.set(0, 0, 0)
@@ -108,6 +112,7 @@ export class Team extends Object3D {
     )
     this.target = null
     this.success = false
+    this.getScene().unFocus()
 
     new Tween(this.rotation)
       .to({ x: 0, y: 0, z: 0 }, 400)

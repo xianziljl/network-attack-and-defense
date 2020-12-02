@@ -41,7 +41,13 @@
       const teams = Array(teamCount).fill().map((_, i) => new Team('天枢战队-' + i))
       playground.setTeams(teams)
 
-      // setTimeout(randomAttack, 5000) // 随机攻击
+      // let isfocus = false
+      // document.body.addEventListener('click', e => {
+      //   isfocus ? playground.unFocus() : playground.focusTeam()
+      //   isfocus = !isfocus
+      // })
+
+      setTimeout(randomAttack, 5000) // 随机攻击
 
       function randomAttack() {
         const team = teams[getRandom(0, teamCount - 1)]
@@ -49,16 +55,17 @@
         const isSuccess = Math.random() > 0.5
         team.toAttack(target, isSuccess)
         
-        // setTimeout(randomAttack, Math.random() * 8000)
+        setTimeout(randomAttack, Math.random() * 8000)
       }
 
       // document.addEventListener('dblclick', randomAttack)
-      teams.forEach(t => {
-        t.panel.content.addEventListener('click', () => {
-          // console.log(t)
-          t.toAttack(targets[getRandom(0, targetCount - 1)], Math.random() > 0.5)
-        })
-      })
+      // teams.forEach(t => {
+      //   t.panel.content.addEventListener('click', () => {
+      //     // console.log(t)
+      //     playground.focus(t)
+      //     t.toAttack(targets[getRandom(0, targetCount - 1)], Math.random() > 0.5)
+      //   })
+      // })
     }
     
     console.log(playground)

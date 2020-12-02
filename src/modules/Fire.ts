@@ -26,10 +26,12 @@ export class Fire extends Group {
     m.map = texture
     const mesh = new Mesh(g, m)
     const mesh1= new Mesh(g, m)
+    const mesh2= new Mesh(g, m)
     // const mesh2= new Mesh(g, m)
     mesh1.rotation.y = -Math.PI / 2
+    mesh2.rotation.x = Math.PI / 2
     // mesh2.rotation.x = -Math.PI / 2
-    this.add(mesh, mesh1)
+    this.add(mesh, mesh1, mesh2)
     this.texture = texture
     Fire.pool.push(this)
     this.visible = false
