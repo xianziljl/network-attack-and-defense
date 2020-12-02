@@ -1,9 +1,6 @@
 import { AdditiveBlending, CubeTexture, CubeTextureLoader, ImageLoader, LinearEncoding, LogLuvEncoding, Material, MaterialLoader, Mesh, MeshPhongMaterial, MeshStandardMaterial, Object3D, RGBEEncoding, RGBM16Encoding, RGBM7Encoding, Texture, TextureLoader } from 'three'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader'
 
 export interface Assets {
   buildings?: Mesh[],

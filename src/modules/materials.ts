@@ -1,4 +1,4 @@
-import { MeshLambertMaterial, LineBasicMaterial, AdditiveBlending, NormalBlending } from 'three'
+import { MeshLambertMaterial, LineBasicMaterial, AdditiveBlending } from 'three'
 
 export const materials = {
   normal: {
