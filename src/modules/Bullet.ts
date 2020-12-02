@@ -1,4 +1,4 @@
-import { Easing, Tween } from '@tweenjs/tween.js'
+import { Tween } from '@tweenjs/tween.js'
 import { BoxBufferGeometry, Mesh, MeshBasicMaterial, Object3D, Scene } from 'three'
 
 const g = new BoxBufferGeometry(3, 3, 30)
@@ -27,10 +27,9 @@ export class Bullet extends Mesh {
     playground.add(bullet)
     new Tween(bullet.position)
       .to(ep, 1000)
-      // .easing(Easing.Quadratic.In)
       .onComplete(() => {
-        bullet.used = false
         playground.remove(bullet)
+        bullet.used = false
       })
       .start()
   }

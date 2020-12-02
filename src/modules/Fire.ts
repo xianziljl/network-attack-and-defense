@@ -1,5 +1,4 @@
-import { Easing, Tween } from '@tweenjs/tween.js'
-import { AdditiveBlending, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, PlaneBufferGeometry, Texture } from 'three'
+import { DoubleSide, Group, Mesh, MeshBasicMaterial, PlaneBufferGeometry, Texture } from 'three'
 
 export class Fire extends Group {
   static pool: Fire[] = []
@@ -22,15 +21,12 @@ export class Fire extends Group {
     m.side = DoubleSide
     m.transparent = true
     m.depthWrite = false
-    // m.blending = AdditiveBlending
     m.map = texture
     const mesh = new Mesh(g, m)
-    const mesh1= new Mesh(g, m)
-    const mesh2= new Mesh(g, m)
-    // const mesh2= new Mesh(g, m)
+    const mesh1 = new Mesh(g, m)
+    const mesh2 = new Mesh(g, m)
     mesh1.rotation.y = -Math.PI / 2
     mesh2.rotation.x = Math.PI / 2
-    // mesh2.rotation.x = -Math.PI / 2
     this.add(mesh, mesh1, mesh2)
     this.texture = texture
     Fire.pool.push(this)
@@ -44,7 +40,7 @@ export class Fire extends Group {
   update() {
     if (this.isUpdate > 6) this.isUpdate = 0
     if (this.isUpdate === 0) {
-      const { index, texture} = this
+      const { index, texture } = this
       const x = ~~(index % 4)
       const y = 3 - ~~(index / 4)
       texture.offset.x = x / 4

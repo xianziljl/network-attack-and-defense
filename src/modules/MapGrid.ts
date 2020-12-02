@@ -1,4 +1,4 @@
-export class MapGrid extends Array<{x: number, y: number, value: number, used: boolean}> {
+export class MapGrid extends Array<{ x: number, y: number, value: number, used: boolean }> {
   size: number
   constructor(size = 20) {
     super()
@@ -12,7 +12,7 @@ export class MapGrid extends Array<{x: number, y: number, value: number, used: b
     const radius = size / 2
     const grd = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius)
     grd.addColorStop(0, '#fff')
-    grd.addColorStop(0.2, '#666')
+    grd.addColorStop(0.2, '#888')
     grd.addColorStop(0.5, '#444')
     grd.addColorStop(1, '#222')
     ctx.fillStyle = grd

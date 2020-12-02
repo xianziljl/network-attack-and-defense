@@ -132,4 +132,8 @@ export class Team extends Object3D {
     this.success = success
     this.startAttack()
   }
+
+  destroy() {
+    this.panel.destroy()
+  }
 }

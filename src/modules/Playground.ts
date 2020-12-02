@@ -14,7 +14,7 @@ import { Team } from './team'
 import Terrain from './Terrain'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { Assets, loadAssets } from '../utils/assets'
-import { Tween, Easing, update as TweenUpdate} from '@tweenjs/tween.js'
+import { Tween, Easing, update as TweenUpdate } from '@tweenjs/tween.js'
 import { Panel } from './Panel'
 import { Bullet } from './Bullet'
 import { Fire } from './Fire'
@@ -23,7 +23,7 @@ import { getRandom } from '../utils/getRandom'
 export class Playground extends Scene {
   el: Element
 
-  camera = new PerspectiveCamera(60, 1, 0.1, 5000)
+  camera = new PerspectiveCamera(50, 1, 0.1, 5000)
   focusCamera = new PerspectiveCamera(70, 1, 0.1, 5000) // 特写相机
   renderer = new WebGLRenderer({ antialias: false })
   renderScene: RenderPass
@@ -65,9 +65,8 @@ export class Playground extends Scene {
 
     console.log('load assets')
     loadAssets((assets: Assets) => {
-      console.log('assets:', assets)
       this.assets = assets
-      
+
       this.loadUI.innerHTML = ''
       this.loadUI.style.opacity = '0'
       setTimeout(() => this.el.removeChild(this.loadUI), 5000)
@@ -85,10 +84,6 @@ export class Playground extends Scene {
         }
       })
 
-      // assets.aerobat.material = new MeshPhongMaterial({
-      //   color: 0x888888,
-      //   normalMap: assets.aerobatMormalMap
-      // })
       this.init(assets)
       if (typeof this.ready === 'function') this.ready()
     })
@@ -103,7 +98,7 @@ export class Playground extends Scene {
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
     // 雾效果
-    this.fog = new FogExp2(0x0f1022, 0.0005)
+    this.fog = new FogExp2(0x0f1022, 0.0008)
     // 灯光
     this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
     const dirLight = new DirectionalLight(0xffffff, 0.3)
@@ -117,8 +112,6 @@ export class Playground extends Scene {
     plight2.position.set(-600, 400, 0)
     this.add(plight1, plight2)
     // this.add(new PointLightHelper(plight1, 30), new PointLightHelper(plight2, 30))
-    // plight1.lookAt(0, 500, 0)
-    // plight1.lookAt(0, 500, 0)
 
     // 天空盒
     this.background = assets.cubeTexture
@@ -154,38 +147,12 @@ export class Playground extends Scene {
     this.bloomPass = new UnrealBloomPass(new Vector2(this.el.clientWidth, this.el.clientHeight), 1, 1.2, 0.23) // 半径，强度，门槛
     this.composer.passes = [this.renderScene, this.bloomPass]
 
-    // window.addEventListener('mousedown', e => {
-    //   console.log(1)
-    //   this.composer.passes = [this.focusScene, this.bloomPass]
-    // })
-    // window.addEventListener('mouseup', e => {
-    //   console.log(2)
-    //   this.composer.passes = [this.renderScene, this.bloomPass]
-    // })
-
-    // 地图辅助网格
-    // const square = new PlaneGeometry(this.gridSize, this.gridSize)
-    // const edges = new EdgesGeometry(square)
-    // const squareBorder = new LineSegments(edges, new LineBasicMaterial({ color: 0xffffff }))
-    // squareBorder.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
-    // for (let i = 0; i < 200; i++) {
-    //   const sq = squareBorder.clone()
-    //   const grid = this.mapGrid[i]
-    //   const { x, y, value } = grid
-    //   sq.position.set(x * this.gridSize, -300, y * this.gridSize)
-    //   if (i > 0) this.add(sq)
-    // }
-
     Panel.camera = this.camera
     Panel.renderer = this.renderer
     this.initControls()
     requestAnimationFrame(this.animate.bind(this))
 
     window.addEventListener('resize', this.resize.bind(this))
-
-    console.log(Bullet.pool)
-
-    // document.body.addEventListener('dblclick', this.startAnim.bind(this))
   }
 
   private initControls() {
@@ -214,7 +181,10 @@ export class Playground extends Scene {
     this.teams.push(team)
   }
   public clearTeams() {
-    this.teams.forEach(t => this.teamModels.remove(t))
+    this.teams.forEach(t => {
+      this.teamModels.remove(t)
+      t.destroy()
+    })
     this.remove(this.teamModels)
     this.teams = []
   }
@@ -255,15 +225,18 @@ export class Playground extends Scene {
   }
 
   public clearTargets() {
-    this.targets.forEach(t => this.remove(t))
+    this.targets.forEach(t => {
+      this.remove(t)
+      t.destroy()
+    })
     this.targets = []
   }
 
   private resize() {
     const { clientWidth, clientHeight } = this.el
-    this.camera.aspect = clientWidth / clientHeight
+    this.camera.aspect = this.focusCamera.aspect = clientWidth / clientHeight
     this.camera.updateProjectionMatrix()
-    // this.controlCamera.updateProjectionMatrix()
+    this.focusCamera.updateProjectionMatrix()
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(clientWidth, clientHeight)
   }
@@ -293,7 +266,7 @@ export class Playground extends Scene {
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
   }
-  
+
   focus(team: Team) {
     if (!team || this.isFocus || this.focusTeam) return
     this.isFocus = true

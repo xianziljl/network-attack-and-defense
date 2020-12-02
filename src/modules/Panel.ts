@@ -1,10 +1,7 @@
-import { Object3D, PerspectiveCamera, WebGLRenderer } from 'three'
-import { CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer'
+import { PerspectiveCamera, WebGLRenderer } from 'three'
 import { h } from '../utils/dom'
 import { Target } from './Target'
 import { Team } from './Team'
-
-const HALF_ANGLE = Math.PI / 2
 
 export interface PanelOffset {
   x?: number

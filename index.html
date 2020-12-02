@@ -16,7 +16,7 @@
   </div>
 
   <script type="module">
-    import { Playground, Target, Team, Panel } from '/dist/dist.js'
+    import { Playground, Target, Team } from '/dist/dist.js'
 
     // 取随机数
     function getRandom(min, max) {
@@ -30,22 +30,16 @@
       // 是否显示帧率
       // playground.stateShow = true
 
-      const targetCount = 20
-      const teamCount = 20
+      const targetCount = 20 // 队伍数量
+      const teamCount = 20 // 关卡数量
 
       // 初始化了目标
-      const targets = Array(targetCount).fill().map((_, i) => new Target('目标_' + i, i * 2 + 100))
+      const targets = Array(targetCount).fill().map((_, i) => new Target('目标-' + i, i * 2 + 100))
       playground.setTargets(targets)
 
       // 初始化队伍
-      const teams = Array(teamCount).fill().map((_, i) => new Team('天枢战队-' + i))
+      const teams = Array(teamCount).fill().map((_, i) => new Team('战队-' + i))
       playground.setTeams(teams)
-
-      // let isfocus = false
-      // document.body.addEventListener('click', e => {
-      //   isfocus ? playground.unFocus() : playground.focusTeam()
-      //   isfocus = !isfocus
-      // })
 
       setTimeout(randomAttack, 5000) // 随机攻击
 
@@ -55,7 +49,7 @@
         const isSuccess = Math.random() > 0.5
         team.toAttack(target, isSuccess)
         
-        setTimeout(randomAttack, Math.random() * 8000)
+        setTimeout(randomAttack, Math.random() * 10000)
       }
 
       // document.addEventListener('dblclick', randomAttack)
@@ -67,8 +61,6 @@
       //   })
       // })
     }
-    
-    console.log(playground)
   
   </script>
 </body>

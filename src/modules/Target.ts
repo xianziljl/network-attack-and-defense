@@ -100,7 +100,6 @@ export class Target extends Object3D {
     this.box.material = materials[mtlstr].box
     const boxBorderMtl = mtlstr === 'normal' ? materials.blue.line : materials[mtlstr].line
     this.box.children[0]['material'] = boxBorderMtl
-    // console.log(mtlstr, this.box.children[0]['material'])
   }
 
   public beAttack(team: Team, success: boolean) {
@@ -133,6 +132,6 @@ export class Target extends Object3D {
   }
 
   destroy() {
-    //   this.destroy()
+    this.panel.destroy()
   }
 }
