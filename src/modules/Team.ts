@@ -35,6 +35,7 @@ export class Team extends Object3D {
   panel: TeamPanel
   box: LineSegments
   obj: Mesh
+  cpos = new Object3D() // 一个虚拟的点，用于标识特写摄像机位置
 
   winRecords: string[] = []
 
@@ -53,6 +54,8 @@ export class Team extends Object3D {
     mtl.color.set(0x888888)
     this.add(_obj)
     this.obj = obj
+    this.cpos.position.set(0, 20, -100)
+    this.add(this.cpos)
     this.lookAt(0, 0, 0)
   }
 

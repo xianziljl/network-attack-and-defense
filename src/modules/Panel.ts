@@ -19,7 +19,7 @@ export class Panel {
   public offset: PanelOffset
   public content: HTMLDivElement
 
-  constructor(obj: Target | Team, offset?: PanelOffset) {
+  constructor(obj: Target | Team, offset?: PanelOffset, elselector: string = '.playground') {
     this.obj = obj
     this.el = h('div') as HTMLDivElement
     this.el.className = 'panel'
@@ -27,7 +27,7 @@ export class Panel {
     this.content.className = 'panel-content'
     this.content.innerHTML = this.obj.name || '_'
     this.el.appendChild(this.content)
-    document.body.appendChild(this.el)
+    document.querySelector(elselector).appendChild(this.el)
     Panel.instances.push(this)
 
     this.offset = offset || { x: 0, y: 0, z: 0 }

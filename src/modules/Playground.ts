@@ -22,7 +22,7 @@ const pausedEvent = new CustomEvent('playground-paused')
 const playEvent = new CustomEvent('playground-play')
 
 export class Playground extends Scene {
-  el: Element
+  el: HTMLElement
 
   camera = new PerspectiveCamera(72, 1, 0.1, 5000)
   focusCamera = new PerspectiveCamera(55, 1, 0.1, 5000) // 特写相机
@@ -36,7 +36,6 @@ export class Playground extends Scene {
   teamModels = new Group()
 
   statsUI: Stats
-  loadUI = document.createElement('div')
 
   focusTeam: Team
   isFocus = false
@@ -49,29 +48,27 @@ export class Playground extends Scene {
   assets: Assets
 
   // events
-  ready: Function = () => { }
+  _isReady = false
+  onReady: Function = () => {}
 
   constructor(el: HTMLElement) {
     super()
     this.el = el
 
-    this.loadUI.className = 'load-ui'
-    this.el.appendChild(this.loadUI)
-
     DefaultLoadingManager.onStart = () => {
-      this.loadUI.innerHTML = `<div>LOADING... 0%</div>`
+      document.querySelector('.load-ui').innerHTML = `<div>LOADING... 0%</div>`
     }
     DefaultLoadingManager.onProgress = (url, loaded, total) => {
-      this.loadUI.innerHTML = `<div>LOADING... ${(loaded / total * 100).toFixed(2)}%</div>`
+      document.querySelector('.load-ui').innerHTML = `<div>LOADING... ${(loaded / total * 100).toFixed(2)}%</div>`
     }
 
     console.log('load assets')
     loadAssets((assets: Assets) => {
       this.assets = assets
-
-      this.loadUI.innerHTML = ''
-      this.loadUI.style.opacity = '0'
-      setTimeout(() => this.el.removeChild(this.loadUI), 5000)
+      const loadUI = document.querySelector('.load-ui') as HTMLElement
+      loadUI.innerHTML = ''
+      loadUI.style.opacity = '0'
+      setTimeout(() => document.body.removeChild(loadUI), 5000)
 
       Fire.texture = assets.fire
 
@@ -87,7 +84,7 @@ export class Playground extends Scene {
       })
 
       this.init(assets)
-      if (typeof this.ready === 'function') this.ready()
+      if (typeof this.onReady === 'function') this.onReady()
     })
   }
 
@@ -152,6 +149,7 @@ export class Playground extends Scene {
     Panel.camera = this.camera
     Panel.renderer = this.renderer
     this.initControls()
+    this._isReady = true
     requestAnimationFrame(this.animate.bind(this))
 
     window.addEventListener('resize', this.resize.bind(this))
@@ -257,14 +255,17 @@ export class Playground extends Scene {
     return !!this.statsUI
   }
 
-  pause() {
+  hide() {
     this.isPaused = true
-    window.dispatchEvent(pausedEvent)
+    this.el.classList.remove('show')
+    this.el.classList.add('hide')
   }
-  play() {
+  show() {
+    if (!this.isPaused) return
     this.isPaused = false
-    this.animate()
-    window.dispatchEvent(playEvent)
+    this.el.classList.remove('hide')
+    this.el.classList.add('show')
+    if (this._isReady) this.animate()
   }
 
   animate() {
@@ -298,9 +299,16 @@ export class Playground extends Scene {
   updateFocusCamera() {
     const { focusTeam, focusCamera } = this
     if (!focusTeam || !focusTeam.target) return
-    const p = focusTeam.position.clone()
-    focusTeam.getWorldPosition(p)
+    const p = new Vector3()
+    focusTeam.cpos.getWorldPosition(p)
     focusCamera.position.set(p.x, p.y + 100, p.z)
     focusCamera.lookAt(focusTeam.target.position)
+  }
+  ready(cbk: Function) {
+    if (this._isReady) {
+      if (typeof cbk === 'function') cbk()
+    } else {
+      this.onReady = cbk
+    }
   }
 }

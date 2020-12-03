@@ -8,12 +8,14 @@
 </head>
 <body>
   <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
-    <button id="pause">pause</button>
-    <button id="play">play</button>
+    <button id="show">show</button>
+    <button id="hide">hide</button>
   </div>
   <div class="playground"></div>
   <!-- <div class="teaminfo"></div> -->
+  <div class="load-ui"></div>
 
+  <script src="/node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
     import { Playground, Target, Team } from './ctf/playground.js'
 
@@ -22,48 +24,58 @@
       return Math.floor(Math.random() * (max - min + 1) + min)
     }
 
-
-    let isPaused = false
-    let timer = null
     const playgrouneEl = document.querySelector('.playground')
+    const teaminfoEl = document.querySelector('.teaminfo')
+
     const playground = new Playground(playgrouneEl)
+
     
-    playground.ready = () => {
+    
+    playground.ready(() => {
       // 是否显示帧率
       playground.stateShow = true
-       // 队伍数量
-      const TARGET_COUNT = 20
-       // 关卡数量
-      const TEAM_COUNT = 20
-      // 初始化目标
-      const targets = Array(TARGET_COUNT).fill().map((_, i) => new Target('目标-' + i, i * 2 + 100))
-      playground.setTargets(targets)
-      // 初始化队伍
-      const teams = Array(TEAM_COUNT).fill().map((_, i) => new Team('战队-' + i))
-      playground.setTeams(teams)
 
-      // 5 秒后随机攻击
-      setTimeout(randomAttack, 5000)
+      let targets = []
+      let teams = []
 
       function randomAttack() {
-        const team = teams[random(0, TEAM_COUNT - 1)]
-        const target = targets[random(0, TARGET_COUNT - 1)]
+        if (!teams.length || !targets.length) return
+        const team = teams[random(0, teams.length - 1)]
+        const target = targets[random(0, targets.length - 1)]
         const isSuccess = Math.random() > 0.5
         team.toAttack(target, isSuccess)
-        console.log('attack:' + team.name + ' => ' + target.name, + '    ' + isSuccess)
+        // console.log('attack:' + team.name + ' => ' + target.name, + '    ' + isSuccess)
         setTimeout(randomAttack, Math.random() * 10000)
       }
-    }
+  
+      axios.get('/json/targets.json').then(res => {
+        const targetsData = res.data.sort((a, b) => b.score - a.score)
+        targets = targetsData.map(t => new Target(t.name, t.score))
+        playground.setTargets(targets)
+      })
+
+      axios.get('/json/teams.json').then(res => {
+        const teamsData = res.data
+        teams = teamsData.map(t => new Team(t.name))
+        playground.setTeams(teams)
+
+        // 5 秒后随机攻击
+        setTimeout(randomAttack, 5000)
+      })
+
+
+      
+    })
 
 
     
 
   
-    document.querySelector('#pause').addEventListener('click', e => {
-      playground.pause()
+    document.querySelector('#show').addEventListener('click', e => {
+      playground.show()
     })  
-    document.querySelector('#play').addEventListener('click', e => {
-      playground.play()
+    document.querySelector('#hide').addEventListener('click', e => {
+      playground.hide()
     })
   </script>
 </body>
