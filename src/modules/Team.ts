@@ -56,7 +56,7 @@ export class Team extends Object3D {
     this.lookAt(0, 0, 0)
   }
 
-  private getScene(): Playground {
+  get playground(): Playground {
     let scene = this.parent
     while (scene && scene.type !== 'Scene') {
       scene = scene.parent
@@ -65,16 +65,13 @@ export class Team extends Object3D {
   }
 
   private startAttack() {
-    this.getScene().focus(this)
+    this.playground.focus(this)
     this.lookAt(this.target.position)
     const toRotate = { x: this.rotation.x, y: this.rotation.y, z: this.rotation.z }
     this.rotation.set(0, 0, 0)
     new Tween(this.position)
       .to({ y: 200 }, 400)
       .easing(Easing.Quartic.InOut)
-      // .onUpdate(() => {
-      //   this.lookAt(this.target.position)
-      // })
       .onComplete(this.attack.bind(this))
       .start()
     new Tween(this.rotation)
@@ -83,8 +80,7 @@ export class Team extends Object3D {
   }
   private attack() {
     const { target, success } = this
-    const scene = this.getScene()
-    if (!scene) return
+    const scene = this.playground
     loop({
       interval: 150,
       times: 10,
@@ -102,9 +98,9 @@ export class Team extends Object3D {
   }
 
   private endAttack() {
-    const { target, success } = this
-    if (success || target.winTeams.length) target.status = 2
-    else target.status = 1
+    // const { target, success } = this
+    // if (success || target.winTeams.length) target.status = 2
+    // else target.status = 1
 
     if (this.winRecords.length >= 3) broadcast(
       'KILL SPREE!!',
@@ -112,7 +108,6 @@ export class Team extends Object3D {
     )
     this.target = null
     this.success = false
-    this.getScene().unFocus()
 
     new Tween(this.rotation)
       .to({ x: 0, y: 0, z: 0 }, 400)
@@ -130,7 +125,13 @@ export class Team extends Object3D {
     if (this.target) return
     this.target = target
     this.success = success
-    this.startAttack()
+    if (this.playground.isPaused) {
+      this.target.beAttack(this, success)
+      this.target = null
+      this.success = false
+    } else {
+      this.startAttack()
+    }
   }
 
   destroy() {

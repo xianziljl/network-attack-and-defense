@@ -1,3 +1,5 @@
-import { Mesh } from 'three'
+import { Mesh, Material, Scene } from 'three'
 
-console.log(Mesh)
+export class TeamInfo extends Scene {
+  
+}

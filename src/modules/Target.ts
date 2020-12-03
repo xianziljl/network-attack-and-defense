@@ -4,6 +4,7 @@ import { Team } from './Team'
 import { Tween } from '@tweenjs/tween.js'
 import { materials } from './materials'
 import { Fire } from './Fire'
+import { Playground } from './Playground'
 
 enum TargetStatus {
   normal = 1,
@@ -19,7 +20,6 @@ export class Target extends Object3D {
   lines: LineSegments
   box: Mesh
   mesh: Mesh
-  light = new PointLight(colorRed, 0.8, 350)
 
   name: string
   score: number
@@ -61,37 +61,30 @@ export class Target extends Object3D {
     this.panel.el.addEventListener('mouseenter', () => this.box.visible = true)
     this.panel.el.addEventListener('mouseleave', () => this.box.visible = false)
   }
-
   set status (status: TargetStatus) {
     this._status = status
     switch (status) {
       case TargetStatus.blue:
         this.setMaterial('blue')
-        // this.light.color = colorBlue
-        this.remove(this.light)
         break
 
       case TargetStatus.red:
         this.setMaterial('red')
-        this.light.color = colorRed
-        this.add(this.light)
         break
 
       default:
         this.setMaterial('normal')
-        this.remove(this.light)
     }
   }
   get status(): TargetStatus {
     return this._status
   }
-  
-  private getScene(): Scene {
+  get playground(): Playground {
     let scene = this.parent
     while (scene && scene.type !== 'Scene') {
       scene = scene.parent
     }
-    return scene as Scene
+    return scene as Playground
   }
 
   private setMaterial(mtlstr: string) {
@@ -103,32 +96,35 @@ export class Target extends Object3D {
   }
 
   public beAttack(team: Team, success: boolean) {
-    const fire = Fire.getOne()
-    fire.position.copy(this.position)
-    fire.scale.set(this.scale.x, this.scale.y * 1.5, this.scale.z)
-    fire.position.y += Fire.size * this.scale.y / 3
-    const scene = this.getScene()
-    scene.add(fire)
-    fire.start()
-    const fire1 = Fire.getOne()
-    fire1.position.copy(fire.position)
-    fire1.scale.copy(fire.scale)
-    fire1.rotation.y = -Math.PI / 4
-    scene.add(fire1)
-    this.panel.type = 2 // 显示详情
-    setTimeout(() => {
-      this.panel.type = 1
-    }, 5000)
-    setTimeout(() => {
-      fire1.start()
-    }, 600)
+    const scene = this.playground
+    if (!scene.isPaused) {
+      const fire = Fire.getOne()
+      fire.position.copy(this.position)
+      fire.scale.set(this.scale.x, this.scale.y * 1.5, this.scale.z)
+      fire.position.y += Fire.size * this.scale.y / 3
+      scene.add(fire)
+      fire.start()
+      const fire1 = Fire.getOne()
+      fire1.position.copy(fire.position)
+      fire1.scale.copy(fire.scale)
+      fire1.rotation.y = -Math.PI / 4
+      scene.add(fire1)
+      this.panel.type = 2 // 显示详情
+      setTimeout(() => {
+        fire1.start()
+        this.status = success ? 2 : 3
+      }, 600)
+    }
+
     if (success) {
-      this.status = 2
       this.panel.addItem(team.name)
       if (!this.winTeams.includes(team)) this.winTeams.push(team)
-    } else {
-      this.status = 3
     }
+  
+    setTimeout(() => {
+      this.panel.type = 1
+      this.status = success || this.winTeams.length ? 2 : 1
+    }, 4000)
   }
 
   destroy() {

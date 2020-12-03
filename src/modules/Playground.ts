@@ -18,6 +18,9 @@ import { Panel } from './Panel'
 import { Fire } from './Fire'
 import { getRandom } from '../utils/getRandom'
 
+const pausedEvent = new CustomEvent('playground-paused')
+const playEvent = new CustomEvent('playground-play')
+
 export class Playground extends Scene {
   el: Element
 
@@ -37,6 +40,7 @@ export class Playground extends Scene {
 
   focusTeam: Team
   isFocus = false
+  isPaused = false
   mapGrid = new MapGrid()
   gridSize = 200
   teams: Team[] = []
@@ -253,34 +257,44 @@ export class Playground extends Scene {
     return !!this.statsUI
   }
 
+  pause() {
+    this.isPaused = true
+    window.dispatchEvent(pausedEvent)
+  }
+  play() {
+    this.isPaused = false
+    this.animate()
+    window.dispatchEvent(playEvent)
+  }
+
   animate() {
-    requestAnimationFrame(this.animate.bind(this))
+    if (!this.isPaused) requestAnimationFrame(this.animate.bind(this))
     this.teamModels.rotation.y -= 0.006
-    this.controls.update()
-    TweenUpdate()
     Panel.update()
+    TweenUpdate()
     Fire.update()
+    this.controls.update()
     if (this.focusTeam) this.updateFocusCamera()
     this.composer.render()
     if (this.statsUI) this.statsUI.update()
   }
 
   focus(team: Team) {
-    if (!team || this.isFocus || this.focusTeam) return
-    this.isFocus = true
+    if (this.isFocus || !team || this.focusTeam) return
     this.focusTeam = team
     Panel.camera = this.focusCamera
     this.composer.passes = [this.focusScene, this.bloomPass]
+    this.isFocus = true
+    setTimeout(() => {
+      Panel.camera = this.camera
+      this.composer.passes = [this.renderScene, this.bloomPass]
+      this.focusTeam = null
+      setTimeout(() => {
+        this.isFocus = false
+      }, 2000)
+    }, 3000)
   }
 
-  unFocus() {
-    Panel.camera = this.camera
-    this.composer.passes = [this.renderScene, this.bloomPass]
-    this.focusTeam = null
-    setTimeout(() => {
-      this.isFocus = false
-    }, 1000)
-  }
   updateFocusCamera() {
     const { focusTeam, focusCamera } = this
     if (!focusTeam || !focusTeam.target) return

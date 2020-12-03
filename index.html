@@ -7,7 +7,12 @@
   <link rel="stylesheet" href="./ctf/playground.css">
 </head>
 <body>
+  <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
+    <button id="pause">pause</button>
+    <button id="play">play</button>
+  </div>
   <div class="playground"></div>
+  <!-- <div class="teaminfo"></div> -->
 
   <script type="module">
     import { Playground, Target, Team } from './ctf/playground.js'
@@ -17,6 +22,9 @@
       return Math.floor(Math.random() * (max - min + 1) + min)
     }
 
+
+    let isPaused = false
+    let timer = null
     const playgrouneEl = document.querySelector('.playground')
     const playground = new Playground(playgrouneEl)
     
@@ -42,11 +50,21 @@
         const target = targets[random(0, TARGET_COUNT - 1)]
         const isSuccess = Math.random() > 0.5
         team.toAttack(target, isSuccess)
-
+        console.log('attack:' + team.name + ' => ' + target.name, + '    ' + isSuccess)
         setTimeout(randomAttack, Math.random() * 10000)
       }
     }
+
+
+    
+
   
+    document.querySelector('#pause').addEventListener('click', e => {
+      playground.pause()
+    })  
+    document.querySelector('#play').addEventListener('click', e => {
+      playground.play()
+    })
   </script>
 </body>
 </html>
