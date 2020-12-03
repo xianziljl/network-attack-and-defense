@@ -8,8 +8,9 @@
 </head>
 <body>
   <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
-    <button id="scene-1">攻击页</button>
-    <button id="scene-2">详情页</button>
+    <button id="scene-1">主监控</button>
+    <button id="scene-2">队伍详情</button>
+    <button id="scene-3">排位详情</button>
   </div>
   <div class="scene playground show"></div>
   <div class="scene teaminfo hide"></div>
@@ -74,6 +75,10 @@
     document.querySelector('#scene-2').addEventListener('click', e => {
       playground.hide()
       teaminfo.show()
+    }) 
+    document.querySelector('#scene-3').addEventListener('click', e => {
+      playground.hide()
+      teaminfo.hide()
     })
   </script>
 </body>
