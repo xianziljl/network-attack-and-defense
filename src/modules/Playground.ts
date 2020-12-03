@@ -97,7 +97,7 @@ export class Playground extends Scene {
     this.camera.updateProjectionMatrix()
     this.camera.updateMatrixWorld(true)
     // 雾效果
-    this.fog = new FogExp2(0x0f1022, 0.0008)
+    this.fog = new FogExp2(0x0f1022, 0.0005)
     // 灯光
     this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
     const dirLight = new DirectionalLight(0xffffff, 0.3)
@@ -238,6 +238,7 @@ export class Playground extends Scene {
     this.camera.updateProjectionMatrix()
     this.focusCamera.updateProjectionMatrix()
     this.renderer.setPixelRatio(window.devicePixelRatio)
+    if (this.bloomPass) this.bloomPass.resolution.set(clientWidth, clientHeight)
     this.renderer.setSize(clientWidth, clientHeight)
   }
 
@@ -286,10 +287,12 @@ export class Playground extends Scene {
     Panel.camera = this.focusCamera
     this.composer.passes = [this.focusScene, this.bloomPass]
     this.isFocus = true
+    this.controls.enabled = false
     setTimeout(() => {
       Panel.camera = this.camera
       this.composer.passes = [this.renderScene, this.bloomPass]
       this.focusTeam = null
+      this.controls.enabled = true
       setTimeout(() => {
         this.isFocus = false
       }, 2000)

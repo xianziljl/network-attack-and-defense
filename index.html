@@ -8,16 +8,17 @@
 </head>
 <body>
   <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
-    <button id="show">show</button>
-    <button id="hide">hide</button>
+    <button id="scene-1">攻击页</button>
+    <button id="scene-2">详情页</button>
   </div>
-  <div class="playground"></div>
-  <!-- <div class="teaminfo"></div> -->
+  <div class="scene playground show"></div>
+  <div class="scene teaminfo hide"></div>
   <div class="load-ui"></div>
 
   <script src="/node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
     import { Playground, Target, Team } from './ctf/playground.js'
+    import { TeamInfo } from './ctf/teaminfo.js'
 
     // 取随机数
     function random(min, max) {
@@ -25,15 +26,13 @@
     }
 
     const playgrouneEl = document.querySelector('.playground')
-    const teaminfoEl = document.querySelector('.teaminfo')
-
     const playground = new Playground(playgrouneEl)
+    playground.stateShow = true
 
-    
+    const teaminfoEl = document.querySelector('.teaminfo')
+    const teaminfo = new TeamInfo(teaminfoEl)
     
     playground.ready(() => {
-      // 是否显示帧率
-      playground.stateShow = true
 
       let targets = []
       let teams = []
@@ -62,20 +61,19 @@
         // 5 秒后随机攻击
         setTimeout(randomAttack, 5000)
       })
-
-
-      
     })
 
 
     
 
   
-    document.querySelector('#show').addEventListener('click', e => {
+    document.querySelector('#scene-1').addEventListener('click', e => {
       playground.show()
+      teaminfo.hide()
     })  
-    document.querySelector('#hide').addEventListener('click', e => {
+    document.querySelector('#scene-2').addEventListener('click', e => {
       playground.hide()
+      teaminfo.show()
     })
   </script>
 </body>
