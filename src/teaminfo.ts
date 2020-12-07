@@ -97,5 +97,6 @@ export class TeamInfo extends Scene {
     this.controls.autoRotateSpeed = 3
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.1
+    this.controls.enablePan = false
   }
 }
