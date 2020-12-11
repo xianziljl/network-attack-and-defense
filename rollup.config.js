@@ -15,14 +15,14 @@ const external = [
   'three/examples/jsm/controls/OrbitControls'
 ]
 const paths = {
-  'three': '/node_modules/three/build/three.module.js',
-  '@tweenjs/tween.js': '/node_modules/@tweenjs/tween.js/dist/tween.esm.js',
-  'three/examples/jsm/loaders/GLTFLoader': '/node_modules/three/examples/jsm/loaders/GLTFLoader.js',
-  'three/examples/jsm/loaders/OBJLoader2': '/node_modules/three/examples/jsm/loaders/OBJLoader2.js',
-  'three/examples/jsm/controls/OrbitControls': '/node_modules/three/examples/jsm/controls/OrbitControls.js',
-  'three/examples/jsm/postprocessing/EffectComposer': '/node_modules/three/examples/jsm/postprocessing/EffectComposer.js',
-  'three/examples/jsm/postprocessing/RenderPass': '/node_modules/three/examples/jsm/postprocessing/RenderPass.js',
-  'three/examples/jsm/postprocessing/UnrealBloomPass': '/node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
+  'three': '../node_modules/three/build/three.module.js',
+  '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
+  'three/examples/jsm/loaders/GLTFLoader': '../node_modules/three/examples/jsm/loaders/GLTFLoader.js',
+  'three/examples/jsm/loaders/OBJLoader2': '../node_modules/three/examples/jsm/loaders/OBJLoader2.js',
+  'three/examples/jsm/controls/OrbitControls': '../node_modules/three/examples/jsm/controls/OrbitControls.js',
+  'three/examples/jsm/postprocessing/EffectComposer': '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js',
+  'three/examples/jsm/postprocessing/RenderPass': '../node_modules/three/examples/jsm/postprocessing/RenderPass.js',
+  'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
 }
 const plugins = [
   resolve(),

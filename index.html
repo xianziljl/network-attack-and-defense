@@ -7,19 +7,18 @@
   <link rel="stylesheet" href="./ctf/playground.css">
 </head>
 <body>
-  <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
+  <!-- <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
     <button id="scene-1">主监控</button>
     <button id="scene-2">队伍详情</button>
     <button id="scene-3">排位详情</button>
-  </div>
+  </div> -->
   <div class="scene playground show"></div>
   <div class="scene teaminfo hide"></div>
   <div class="load-ui"></div>
 
-  <script src="/node_modules/axios/dist/axios.min.js"></script>
+  <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
     import { Playground, Target, Team } from './ctf/playground.js'
-    import { TeamInfo } from './ctf/teaminfo.js'
 
     // 取随机数
     function random(min, max) {
@@ -30,8 +29,6 @@
     const playground = new Playground(playgrouneEl)
     playground.stateShow = true
 
-    const teaminfoEl = document.querySelector('.teaminfo')
-    const teaminfo = new TeamInfo(teaminfoEl)
     
     playground.ready(() => {
 
@@ -48,13 +45,13 @@
         setTimeout(randomAttack, Math.random() * 10000)
       }
   
-      axios.get('/json/targets.json').then(res => {
+      axios.get('./json/targets.json').then(res => {
         const targetsData = res.data.sort((a, b) => b.score - a.score)
         targets = targetsData.map(t => new Target(t.name, t.score))
         playground.setTargets(targets)
       })
 
-      axios.get('/json/teams.json').then(res => {
+      axios.get('./json/teams.json').then(res => {
         const teamsData = res.data
         teams = teamsData.map(t => new Team(t.name))
         playground.setTeams(teams)
@@ -64,22 +61,6 @@
       })
     })
 
-
-    
-
-  
-    document.querySelector('#scene-1').addEventListener('click', e => {
-      playground.show()
-      teaminfo.hide()
-    })  
-    document.querySelector('#scene-2').addEventListener('click', e => {
-      playground.hide()
-      teaminfo.show()
-    }) 
-    document.querySelector('#scene-3').addEventListener('click', e => {
-      playground.hide()
-      teaminfo.hide()
-    })
   </script>
 </body>
 </html>
