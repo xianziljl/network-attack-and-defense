@@ -1,9 +1,10 @@
-import { DoubleSide, Group, Mesh, MeshBasicMaterial, PlaneBufferGeometry, Texture } from 'three'
+import { AdditiveBlending, DoubleSide, Group, Mesh, MeshBasicMaterial, PlaneBufferGeometry, Texture, TextureLoader } from 'three'
+import { BaseObject } from './BaseObject'
 
-export class Fire extends Group {
+export class Fire extends BaseObject {
   static pool: Fire[] = []
-  static size = 300
-  static texture: Texture
+  static size = 100
+  static texture: Texture = new TextureLoader().load('/assets/imgs/fire1.png')
 
   index = 0
   isUpdate = 0
@@ -22,11 +23,13 @@ export class Fire extends Group {
     m.transparent = true
     m.depthWrite = false
     m.map = texture
+    m.blending = AdditiveBlending
     const mesh = new Mesh(g, m)
     const mesh1 = new Mesh(g, m)
     const mesh2 = new Mesh(g, m)
     mesh1.rotation.y = -Math.PI / 2
     mesh2.rotation.x = Math.PI / 2
+    mesh2.position.y = -10
     this.add(mesh, mesh1, mesh2)
     this.texture = texture
     Fire.pool.push(this)
@@ -49,6 +52,7 @@ export class Fire extends Group {
       if (this.index === 16) {
         this.index = 0
         this.visible = false
+        this.playground.remove(this)
       }
     }
     this.isUpdate += 1

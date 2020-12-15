@@ -1,7 +1,7 @@
-import { PerspectiveCamera, WebGLRenderer } from 'three'
+import { Object3D, PerspectiveCamera, WebGLRenderer } from 'three'
 import { h } from '../utils/dom'
-import { Target } from './Target'
-import { Team } from '../modules/Team'
+import { Target } from '../CTF/_Target'
+import { TargetCTF } from '../CTF/TargetCTF'
 
 export interface PanelOffset {
   x?: number
@@ -13,13 +13,13 @@ export class Panel {
   static renderer: WebGLRenderer
   static camera: PerspectiveCamera
 
-  public obj: Target | Team
+  public obj: Object3D
   public el: HTMLDivElement
   private _visible = false
   public offset: PanelOffset
   public content: HTMLDivElement
 
-  constructor(obj: Target | Team, offset?: PanelOffset, elselector: string = '.playground') {
+  constructor(obj: Object3D, offset?: PanelOffset, elselector: string = '.playground') {
     this.obj = obj
     this.el = h('div') as HTMLDivElement
     this.el.className = 'panel'
@@ -61,53 +61,10 @@ export class Panel {
   }
 }
 
-export class TeamPanel extends Panel {
-  constructor(obj: Team, offset?: PanelOffset) {
+export class TeamCTFPanel extends Panel {
+  constructor(obj, offset?: PanelOffset) {
     super(obj, offset)
     this.content.classList.add('panel-team')
   }
 }
 
-export class TargetPanel extends Panel {
-  titleEl: HTMLDivElement
-  listEl: HTMLDivElement
-  private _type: 1 | 2 = 1
-  constructor(target: Target, offset?: PanelOffset) {
-    super(target, offset)
-    this.content.innerHTML = ''
-    this.content.classList.add('panel-target')
-    this.titleEl = h('div') as HTMLDivElement
-    this.titleEl.className = 'panel-target-title'
-    this.titleEl.innerHTML = `<span class="name">${target.name}</span><span class="score">${target.score}分</span>`
-
-    this.listEl = h('div') as HTMLDivElement
-    this.listEl.className = 'panel-target-list'
-    this.content.appendChild(this.titleEl)
-    this.content.appendChild(this.listEl)
-  }
-  addItem(name: string) {
-    const count = this.listEl.childElementCount
-    if (count === 3) return
-    const item = h('div')
-    item.className = 'panel-target-item'
-    item.innerHTML = `<span class="top">TOP0${count + 1}</span><span class="tname">${name}</span>`
-    this.listEl.appendChild(item)
-  }
-
-  set type(type: 1 | 2) {
-    this.content.classList.remove(`panel-target-type-${type === 1 ? 2 : 1}`)
-    this.content.classList.add(`panel-target-type-${type}`)
-    this._type = type
-  }
-  get type() {
-    return this._type
-  }
-
-  update() {
-    super.update()
-    if (this._type === 2) {
-      this.el.style.opacity = '1'
-      this.el.style.transform = 'scale(1)'
-    }
-  }
-}

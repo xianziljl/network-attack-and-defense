@@ -24,9 +24,38 @@
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
-    import { PlaygroundCTF } from './js/main.js'
-    const ctfEl = document.querySelector('#ctf')
-    const playgroundCTF = new PlaygroundCTF(ctfEl)
+    import { PlaygroundCTF, CTFAssets, TargetCTF, random } from './js/main.js'
+
+    async function init() {
+      const assets = await CTFAssets.load()
+      const el = document.querySelector('#ctf')
+      const playgroundCTF = new PlaygroundCTF(el, assets)
+
+      const res = await axios.get('./json/targets.json')
+      const targetDataList = res.data
+      const targets = targetDataList.map(item => {
+        const building = assets.buildings[random(0, assets.buildings.length - 1)]
+        return new TargetCTF(building, item.name, item.score)
+      })
+      
+      playgroundCTF.setTargets(targets)
+    }
+    init()
+
+    // CTFAssets.load().then(assets => {
+    //   console.log(assets)
+    //   const el = document.querySelector('#ctf')
+    //   const playgroundCTF = new PlaygroundCTF(el, assets)
+
+    //   const target = new TargetCTF(assets.buildings[3])
+    //   playgroundCTF.add(target)
+      
+    //   console.log(playgroundCTF, target)
+
+    //   setTimeout(() => {
+    //     target.beAttack()
+    //   }, 1000)
+    // })
   </script>
 </body>
 </html>

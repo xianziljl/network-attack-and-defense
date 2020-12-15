@@ -1,6 +1,6 @@
 import { Material, Matrix4, Mesh, MeshBasicMaterial, PlaneBufferGeometry } from 'three'
 
-export default class Terrain extends PlaneBufferGeometry {
+export class Terrain extends PlaneBufferGeometry {
   constructor (heightImg: HTMLImageElement) {
     const { width, height } = heightImg
     super(width, height, width - 1, height - 1)

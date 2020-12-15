@@ -1,9 +1,8 @@
 import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, BufferGeometry, Color, EdgesGeometry, Geometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper, Scene } from 'three'
-import { Panel, TargetPanel } from './Panel'
-import { Team } from '../modules/Team'
+import { Panel, TargetPanel } from '../common/Panel'
 import { Tween } from '@tweenjs/tween.js'
-import { Fire } from './Fire'
-import { Playground } from './Playground'
+import { Fire } from '../common/Fire'
+import { Playground } from '../common/Playground'
 
 enum TargetStatus {
   normal = 1,

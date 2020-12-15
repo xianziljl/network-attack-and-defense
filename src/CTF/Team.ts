@@ -4,8 +4,9 @@ import { broadcast } from '../utils/broadcast'
 import { Bullet } from '../common/Bullet'
 import { Panel, TeamPanel } from '../common/Panel'
 import { Playground } from '../common/Playground'
-import { Target } from '../common/Target'
+import { Target } from './_Target'
 import { PlaygroundCTF } from './PlaygroundCTF'
+import { BaseObject } from '../common/BaseObject'
 
 function loop(option: { interval: number, times: number, callback: Function, onStart?: Function, onEnd?: Function }) {
   let _times = option.times || 1
@@ -28,7 +29,7 @@ function loop(option: { interval: number, times: number, callback: Function, onS
 }
 
 
-export class Team extends Object3D {
+export class Team extends BaseObject {
   name: string
   target: Target | null  // 当前攻击目标
   success: boolean = false
@@ -58,14 +59,6 @@ export class Team extends Object3D {
     this.cpos.position.set(0, 20, -100)
     this.add(this.cpos)
     this.lookAt(0, 0, 0)
-  }
-
-  get playground(): PlaygroundCTF {
-    let scene = this.parent
-    while (scene && scene.type !== 'Scene') {
-      scene = scene.parent
-    }
-    return scene as PlaygroundCTF
   }
 
   private startAttack() {
