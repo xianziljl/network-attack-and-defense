@@ -1,8 +1,7 @@
 import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, BufferGeometry, Color, EdgesGeometry, Geometry, Group, LineBasicMaterial, LineSegments, Loader, Matrix4, Mesh, MeshLambertMaterial, MeshPhongMaterial, NormalBlending, Object3D, ObjectLoader, PointLight, PointLightHelper, Scene } from 'three'
 import { Panel, TargetPanel } from './Panel'
-import { Team } from './Team'
+import { Team } from '../modules/Team'
 import { Tween } from '@tweenjs/tween.js'
-import { materials } from './materials'
 import { Fire } from './Fire'
 import { Playground } from './Playground'
 
@@ -12,8 +11,23 @@ enum TargetStatus {
   red = 3
 }
 
-const colorRed = new Color(0xff0000)
-const colorBlue = new Color(0x0020ff)
+const materials = {
+  normal: {
+    mesh: new MeshLambertMaterial({ color: 0x2a3d5c }),
+    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending, transparent: true, opacity: 0.3 }),
+    box: new MeshLambertMaterial({ color: 0x2a3d5c, transparent: true, opacity: 0.6, blending: AdditiveBlending }),
+  },
+  red: {
+    mesh: new MeshLambertMaterial({ color: 0x350000 }),
+    line: new LineBasicMaterial({ color: 0xff2000, blending: AdditiveBlending }),
+    box: new MeshLambertMaterial({ color: 0xff2000, transparent: true, opacity: 0.6, blending: AdditiveBlending }),
+  },
+  blue: {
+    mesh: new MeshLambertMaterial({ color: 0x002f69 }),
+    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending }),
+    box: new MeshLambertMaterial({ color: 0x006bff, transparent: true, opacity: 0.6, blending: AdditiveBlending }),
+  }
+}
 
 export class Target extends Object3D {
   panel: TargetPanel

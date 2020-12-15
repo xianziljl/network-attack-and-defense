@@ -4,16 +4,6 @@ import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 import scss from 'rollup-plugin-scss'
 
-const external = [
-  'three',
-  '@tweenjs/tween.js',
-  'three/examples/jsm/loaders/GLTFLoader',
-  'three/examples/jsm/loaders/OBJLoader2',
-  'three/examples/jsm/postprocessing/EffectComposer',
-  'three/examples/jsm/postprocessing/RenderPass',
-  'three/examples/jsm/postprocessing/UnrealBloomPass',
-  'three/examples/jsm/controls/OrbitControls'
-]
 const paths = {
   'three': '../node_modules/three/build/three.module.js',
   '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
@@ -32,22 +22,13 @@ const plugins = [
   livereload()
 ]
 
-export default [{
-  input: 'src/playground.ts',
-  external,
+export default {
+  input: 'src/index.ts',
+  external: Object.keys(paths),
   output: {
-    file: 'ctf/playground.js',
+    file: 'js/main.js',
     format: 'esm',
     paths
   },
   plugins
-}, {
-  input: 'src/teaminfo.ts',
-  external,
-  output: {
-    file: 'ctf/teaminfo.js',
-    format: 'esm',
-    paths
-  },
-  plugins
-}]
+}

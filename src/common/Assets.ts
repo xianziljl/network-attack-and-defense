@@ -1,18 +1,36 @@
-import { AdditiveBlending, CubeTexture, CubeTextureLoader, ImageLoader, LinearEncoding, LogLuvEncoding, Material, MaterialLoader, Mesh, MeshPhongMaterial, MeshStandardMaterial, Object3D, RGBEEncoding, RGBM16Encoding, RGBM7Encoding, Texture, TextureLoader } from 'three'
+import { AdditiveBlending, CubeTexture, CubeTextureLoader, DefaultLoadingManager, ImageLoader, LinearEncoding, LogLuvEncoding, Material, MaterialLoader, Mesh, MeshPhongMaterial, MeshStandardMaterial, Object3D, RGBEEncoding, RGBM16Encoding, RGBM7Encoding, Texture, TextureLoader } from 'three'
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-export interface Assets {
+const loadUI = document.createElement('div')
+loadUI.className = 'load-ui'
+
+DefaultLoadingManager.onStart = () => {
+  document.body.appendChild(loadUI)
+  loadUI.innerHTML = `<div>LOADING... 0%</div>`
+}
+DefaultLoadingManager.onProgress = (url, loaded, total) => {
+  loadUI.innerHTML = `<div>LOADING... ${(loaded / total * 100).toFixed(2)}%</div>`
+}
+DefaultLoadingManager.onLoad = () => {
+  loadUI.innerHTML = ''
+  loadUI.style.opacity = '0'
+  setTimeout(() => document.body.removeChild(loadUI), 5000)
+}
+
+interface Assets {
   buildings?: Mesh[],
+}
+
+export interface CTFAssets extends Assets {
   aerobat?: Mesh,
-  aerobatMormalMap?: Texture
   heightimg?: HTMLImageElement,
   cubeTexture?: CubeTexture,
   fire?: Texture
 }
 
-export function loadAssets(cbk: Function) {
-  const assets: Assets = {}
+export function loadCTFAssets(cbk: Function) {
+  const assets: CTFAssets = {}
 
   let count = 9
 
@@ -67,3 +85,5 @@ export function loadAssets(cbk: Function) {
   })
   // new OBJLoader2().load('/assets/models/bui')
 }
+
+export function loadAWDAssets(cbk: Function) {}

@@ -8,18 +8,16 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 // import { CopyShader } from 'three/examples/jsm/shaders/CopyShader'
 // import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { Stats } from '../utils/stats'
-import { MapGrid } from './MapGrid'
-import { Target } from './Target'
+import { MapGrid } from '../CTF/MapGrid'
+import { Target } from '../common/Target'
 import { Team } from './team'
-import Terrain from './Terrain'
-import { Assets, loadAssets } from '../utils/assets'
+import Terrain from '../common/Terrain'
+import { CTFAssets, loadCTFAssets } from '../common/Assets'
 import { Tween, Easing, update as TweenUpdate } from '@tweenjs/tween.js'
-import { Panel } from './Panel'
-import { Fire } from './Fire'
+import { Panel } from '../common/Panel'
+import { Fire } from '../common/Fire'
 import { getRandom } from '../utils/getRandom'
 
-const pausedEvent = new CustomEvent('playground-paused')
-const playEvent = new CustomEvent('playground-play')
 
 export class Playground extends Scene {
   el: HTMLElement
@@ -45,7 +43,7 @@ export class Playground extends Scene {
   teams: Team[] = []
   targets: Target[] = []
 
-  assets: Assets
+  assets: CTFAssets
 
   // events
   _isReady = false
@@ -63,7 +61,7 @@ export class Playground extends Scene {
     }
 
     console.log('load assets')
-    loadAssets((assets: Assets) => {
+    loadCTFAssets((assets: CTFAssets) => {
       this.assets = assets
       const loadUI = document.querySelector('.load-ui') as HTMLElement
       loadUI.innerHTML = ''

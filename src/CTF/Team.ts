@@ -1,10 +1,11 @@
 import { Easing, Tween } from '@tweenjs/tween.js'
 import { BoxGeometry, Group, LineSegments, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, Object3D, PointLight, PointLightHelper, Scene } from 'three'
 import { broadcast } from '../utils/broadcast'
-import { Bullet } from './Bullet'
-import { Panel, TeamPanel } from './Panel'
-import { Playground } from './Playground'
-import { Target } from './Target'
+import { Bullet } from '../common/Bullet'
+import { Panel, TeamPanel } from '../common/Panel'
+import { Playground } from '../common/Playground'
+import { Target } from '../common/Target'
+import { PlaygroundCTF } from './PlaygroundCTF'
 
 function loop(option: { interval: number, times: number, callback: Function, onStart?: Function, onEnd?: Function }) {
   let _times = option.times || 1
@@ -59,12 +60,12 @@ export class Team extends Object3D {
     this.lookAt(0, 0, 0)
   }
 
-  get playground(): Playground {
+  get playground(): PlaygroundCTF {
     let scene = this.parent
     while (scene && scene.type !== 'Scene') {
       scene = scene.parent
     }
-    return scene as Playground
+    return scene as PlaygroundCTF
   }
 
   private startAttack() {

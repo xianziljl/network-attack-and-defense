@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>恒安嘉新网络攻防实训平台</title>
-  <link rel="stylesheet" href="./ctf/playground.css">
+  <link rel="stylesheet" href="./js/main.css">
+  <style>
+    html, body{height: 100%;}
+    .playground{width: 100%;height: 100%;}
+  </style>
 </head>
 <body>
   <!-- <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
@@ -12,55 +16,17 @@
     <button id="scene-2">队伍详情</button>
     <button id="scene-3">排位详情</button>
   </div> -->
-  <div class="scene playground show"></div>
+  <!-- <div class="scene playground show"></div>
   <div class="scene teaminfo hide"></div>
-  <div class="load-ui"></div>
+  <div class="load-ui"></div> -->
+
+  <div class="playground"></div>
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
-    import { Playground, Target, Team } from './ctf/playground.js'
-
-    // 取随机数
-    function random(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min)
-    }
-
-    const playgrouneEl = document.querySelector('.playground')
-    const playground = new Playground(playgrouneEl)
-    playground.stateShow = true
-
-    
-    playground.ready(() => {
-
-      let targets = []
-      let teams = []
-
-      function randomAttack() {
-        if (!teams.length || !targets.length) return
-        const team = teams[random(0, teams.length - 1)]
-        const target = targets[random(0, targets.length - 1)]
-        const isSuccess = Math.random() > 0.5
-        team.toAttack(target, isSuccess)
-        // console.log('attack:' + team.name + ' => ' + target.name, + '    ' + isSuccess)
-        setTimeout(randomAttack, Math.random() * 10000)
-      }
-  
-      axios.get('./json/targets.json').then(res => {
-        const targetsData = res.data.sort((a, b) => b.score - a.score)
-        targets = targetsData.map(t => new Target(t.name, t.score))
-        playground.setTargets(targets)
-      })
-
-      axios.get('./json/teams.json').then(res => {
-        const teamsData = res.data
-        teams = teamsData.map(t => new Team(t.name))
-        playground.setTeams(teams)
-
-        // 5 秒后随机攻击
-        setTimeout(randomAttack, 5000)
-      })
-    })
-
+    import { Playground } from './js/main.js'
+    const el = document.querySelector('.playground')
+    const playground = new Playground(el)
   </script>
 </body>
 </html>

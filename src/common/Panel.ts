@@ -1,7 +1,7 @@
 import { PerspectiveCamera, WebGLRenderer } from 'three'
 import { h } from '../utils/dom'
 import { Target } from './Target'
-import { Team } from './Team'
+import { Team } from '../modules/Team'
 
 export interface PanelOffset {
   x?: number
