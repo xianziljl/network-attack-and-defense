@@ -1,4 +1,4 @@
-import { Group, PerspectiveCamera } from 'three'
+import { BoxGeometry, Group, Mesh, MeshBasicMaterial, PerspectiveCamera } from 'three'
 import { Playground } from '../common/Playground'
 import { Target } from '../common/Target'
 
@@ -9,5 +9,15 @@ export class PlaygroundCTF extends Playground {
 
   constructor(el: HTMLElement) {
     super(el)
+
+    const g = new BoxGeometry(100, 100, 100)
+    const m = new MeshBasicMaterial({ color: 0x00ffff })
+    const mesh = new Mesh(g, m)
+    this.add(mesh)
+    this.animate()
+  }
+
+  animate() {
+    super.animate()
   }
 }

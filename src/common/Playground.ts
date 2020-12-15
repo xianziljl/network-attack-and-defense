@@ -4,6 +4,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 import { update as TweenUpdate } from '@tweenjs/tween.js'
 import { Stats } from '../utils/stats'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 
 
 export class Playground extends Scene{
@@ -13,7 +14,7 @@ export class Playground extends Scene{
   // 渲染器
   renderer = new WebGLRenderer({ antialias: false })
   // 泛光效果
-  bloom = new UnrealBloomPass(new Vector2(), 1, 1.2, 0.23)
+  bloom = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1, 1.2, 0.23)
   // 合成器
   composer = new EffectComposer(this.renderer)
   // 交互控制器
@@ -27,7 +28,7 @@ export class Playground extends Scene{
     this.init()
   }
   init () {
-    const { renderer, camera, el } = this
+    const { renderer, camera, el, controls, composer, bloom } = this
     el.appendChild(renderer.domElement)
     this.resize()
     camera.position.z = 1000
@@ -42,9 +43,18 @@ export class Playground extends Scene{
     const dirLight = new DirectionalLight(0xffffff, 0.3)
     dirLight.position.set(1500, 800, 3000)
     this.add(dirLight)
+
+    composer.passes = [new RenderPass(this, this.camera), this.bloom]
+
+    controls.minDistance = 500
+    controls.maxDistance = 1600
+    controls.enabled = true
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 1
+    controls.enableDamping = true
+    controls.dampingFactor = 0.1
     
     window.addEventListener('resize', this.resize.bind(this))
-    this.animate()
   }
   animate() {
     if (!this.isPaused) requestAnimationFrame(this.animate.bind(this))
@@ -55,9 +65,9 @@ export class Playground extends Scene{
   resize() {
     const { clientWidth, clientHeight } = this.el
     this.camera.aspect = clientWidth / clientHeight
-    this.camera.updateProjectionMatrix()
+    this.renderer.setSize(clientWidth, clientHeight)
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.bloom.resolution.set(clientWidth, clientHeight)
-    this.renderer.setSize(clientWidth, clientHeight)
+    this.camera.updateProjectionMatrix()
   }
 }

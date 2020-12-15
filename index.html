@@ -20,13 +20,13 @@
   <div class="scene teaminfo hide"></div>
   <div class="load-ui"></div> -->
 
-  <div class="playground"></div>
+  <div class="playground" id="ctf"></div>
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
-    import { Playground } from './js/main.js'
-    const el = document.querySelector('.playground')
-    const playground = new Playground(el)
+    import { PlaygroundCTF } from './js/main.js'
+    const ctfEl = document.querySelector('#ctf')
+    const playgroundCTF = new PlaygroundCTF(ctfEl)
   </script>
 </body>
 </html>
