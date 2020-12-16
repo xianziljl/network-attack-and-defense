@@ -29,7 +29,7 @@ div{
 
 .panel{
   position: absolute;user-select: none;transform-origin: bottom;
-  transition: transform .3s, opacity .3s;will-change: left;width: 0;height: 0;
+  width: 0;height: 0;left: 0;top: 0;
   display: flex;justify-content: center;align-items: flex-end;overflow: visible;
   white-space: nowrap;color: rgba(#fff, 0.8);
   // &-content{height: ;}

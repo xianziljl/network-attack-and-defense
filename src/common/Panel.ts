@@ -46,9 +46,9 @@ export class Panel {
     v.x = (v.x + 1) / 2 * window.innerWidth
     v.y = -(v.y - 1) / 2 * window.innerHeight
     
-    let style = `left: ${v.x}px;top: ${v.y}px;`
-    if (distance > 1200 || distance <= 0) style += `transform: scale(0);opacity: 0;`
-    else style += `transform: scale(1);opacity: 1;`
+    let style = `transform: translate3d(${v.x}px, ${v.y}px, 0);`
+    if (distance > 1200 || distance <= 0) style += `visibility: hidden;`
+    else style += `visibility: visible;`
 
     this.el.setAttribute('style', style)
   }
