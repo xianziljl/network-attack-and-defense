@@ -36,7 +36,7 @@ export class TargetCTF extends Building{
         this.panel.type = 1
         this.status = success || this.winTeams.length ? 2 : 1
       }, 4000)
-    }, 1000)
+    }, 500)
   }
 
   destroy() {

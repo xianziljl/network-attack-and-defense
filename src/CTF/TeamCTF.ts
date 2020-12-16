@@ -16,6 +16,8 @@ const tailMaterial = new MeshBasicMaterial({
   map: new TextureLoader().load('../assets/imgs/team-tail.png')
 })
 
+let meshMaterial: MeshPhysicalMaterial = null
+
 
 export class TeamCTF extends BaseObject {
   name: string
@@ -36,42 +38,30 @@ export class TeamCTF extends BaseObject {
 
     const mtl = mesh.material as MeshStandardMaterial
     const normalMap = mtl.normalMap
-    const material = new MeshPhysicalMaterial({
+    meshMaterial = meshMaterial || new MeshPhysicalMaterial({
       color: 0x455a69,
       normalMap
     })
-    mesh.material = material
-    this.mesh = mesh
-    mesh.scale.set(0.3, 0.3, 0.3)
-    mesh.rotation.y = -Math.PI
+    const ms = mesh.clone()
+    ms.material = meshMaterial
+    this.mesh = ms
+    ms.scale.set(0.3, 0.3, 0.3)
+    ms.rotation.y = -Math.PI
+    ms.position.y = -5
 
     const g = new BoxGeometry(6, 24, 6)
     g.faces.splice(4, 2)
     const tail = new Mesh(g, tailMaterial)
     tail.rotation.x = -Math.PI / 2
-    tail.position.set(-20, 40, -55)
+    tail.position.set(-20, -5, -55)
     const tail2 = tail.clone()
     tail2.position.x = 20
 
     this.position.y = 400
     this.cpos.position.set(0, 20, -100)
 
-    this.add(mesh, tail, tail2, this.cpos)
+    this.add(ms, tail, tail2, this.cpos)
   }
-
-  // public setModel(obj: Mesh) {
-  //   const _obj = obj.clone()
-  //   _obj.scale.set(0.2, 0.2, 0.2)
-  //   _obj.rotation.y = -Math.PI
-  //   _obj.position.y = -5
-  //   const mtl = _obj.material as MeshStandardMaterial
-  //   mtl.color.set(0x888888)
-  //   this.add(_obj)
-  //   this.obj = obj
-  //   this.cpos.position.set(0, 20, -100)
-  //   this.add(this.cpos)
-  //   this.lookAt(0, 0, 0)
-  // }
 
   private startAttack() {
     const playground = this.playground as PlaygroundCTF
@@ -108,10 +98,6 @@ export class TeamCTF extends BaseObject {
   }
 
   private endAttack() {
-    // const { target, success } = this
-    // if (success || target.winTeams.length) target.status = 2
-    // else target.status = 1
-
     if (this.winRecords.length >= 3) broadcast(
       'KILL SPREE!!',
       `队伍 <span style="color:#fff">${this.name}</span> 连续攻破<span style="color:#fff">${this.winRecords.length}</span>题!`

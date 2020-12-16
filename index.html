@@ -31,22 +31,32 @@
       const assets = await CTFAssetsLoader.load()
       const playgroundCTF = new PlaygroundCTF(el, assets)
       
-      // const [targetData, teamData] = await Promise.all([
-      //   axios.get('./json/targets.json'),
-      //   axios.get('./json/teams.json')
-      // ])
-      // const targets = targetData.data.map(item => {
-      //   const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
-      //   return new TargetCTF(buildingModel, item.name, item.score)
-      // })
+      const [targetData, teamData] = await Promise.all([
+        axios.get('./json/targets.json'),
+        axios.get('./json/teams.json')
+      ])
+      const targets = targetData.data.map(item => {
+        const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
+        return new TargetCTF(buildingModel, item.name, item.score)
+      })
+      const teams = teamData.data.map((item) => {
+        const teamModel = assets.aerobat
+        return new TeamCTF(teamModel, item.name)
+      })
 
-      const target = new TargetCTF(assets.buildings[0], '测试靶标', 1000)
-      const team = new TeamCTF(assets.aerobat, '测试队伍')
-
-      playgroundCTF.add(team)
-      playgroundCTF.addTarget(target)
+      function randomAttack() {
+        if (!teams.length || !targets.length) return
+        const team = teams[random(0, teams.length - 1)]
+        const target = targets[random(0, targets.length - 1)]
+        const isSuccess = Math.random() > 0.5
+        team.toAttack(target, isSuccess)
+        setTimeout(randomAttack, Math.random() * 10000)
+      }
       
-      // playgroundCTF.setTargets(targets)
+      playgroundCTF.setTeams(teams)
+      playgroundCTF.setTargets(targets)
+
+      setTimeout(randomAttack, 5000)
     }
     init()
 

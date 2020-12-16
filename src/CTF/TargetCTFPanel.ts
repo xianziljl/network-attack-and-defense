@@ -47,8 +47,7 @@ export class TargetCTFPanel extends Panel {
   update() {
     super.update()
     if (this._type === 2) {
-      this.el.style.opacity = '1'
-      this.el.style.transform = 'scale(1)'
+      this.el.style.visibility = 'visible'
     }
   }
 }

@@ -1,4 +1,4 @@
-import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, CircleBufferGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, Texture, TextureLoader } from 'three'
+import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, CircleBufferGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, Texture, TextureLoader, Vector3 } from 'three'
 import { CTFAssets } from './CTFAssets'
 import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
@@ -38,13 +38,15 @@ export class PlaygroundCTF extends Playground {
 
     Panel.camera = this.camera
 
+    this.resize()
+
     // 灯光
     const plight1 = new PointLight(0x0090ff, 2, 1000)
     const plight2 = new PointLight(0x00d2ff, 1, 1000)
-    plight1.position.set(600, 500, 0)
-    plight2.position.set(-600, 500, 0)
+    plight1.position.set(550, 500, 0)
+    plight2.position.set(-550, 500, 0)
     this.add(plight1, plight2)
-    this.add(new PointLightHelper(plight1, 30), new PointLightHelper(plight2, 30))
+    // this.add(new PointLightHelper(plight1, 30), new PointLightHelper(plight2, 30))
 
     // 天空盒
     this.background = assets.cubeTexture
@@ -89,6 +91,12 @@ export class PlaygroundCTF extends Playground {
   }
 
   addTeam(team: TeamCTF) {
+    const index = this.teams.length + 1
+    const grid = this.mapGrid[index]
+    const { x, y } = grid
+    team.position.set(x * this.gridSize + this.gridSize / 2, 300, y * this.gridSize + this.gridSize / 2)
+    this.teamGroup.add(team)
+    this.teams.push(team)
   }
   
   clearTeams() {
@@ -146,7 +154,7 @@ export class PlaygroundCTF extends Playground {
     this.composer.passes = [this.focusScenePass, this.bloomPass]
     this.isFocus = true
     this.controls.enabled = false
-    setTimeout(this.unFocus, 3000)
+    setTimeout(this.unFocus.bind(this), 3000)
   }
 
   unFocus() {
@@ -160,8 +168,27 @@ export class PlaygroundCTF extends Playground {
     }, 2000)
   }
 
+  updateFocusCamera() {
+    const { focusTeam, focusCamera } = this
+    if (!focusTeam || !focusTeam.target) return
+    const p = new Vector3()
+    focusTeam.cpos.getWorldPosition(p)
+    focusCamera.position.set(p.x, p.y + 100, p.z)
+    focusCamera.lookAt(focusTeam.target.position)
+  }
+
   animate() {
     super.animate()
     this.scan.rotation.y += 0.04
+    this.teamGroup.rotation.y -= 0.006
+    if (this.focusTeam) this.updateFocusCamera()
+  }
+
+  resize() {
+    super.resize()
+    if (this.focusCamera) {
+      this.focusCamera.aspect = this.camera.aspect
+      this.focusCamera.updateProjectionMatrix()
+    }
   }
 }
