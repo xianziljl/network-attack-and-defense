@@ -127,8 +127,8 @@ export class PlaygroundCTF extends Playground {
     const p = target.position
     new Tween(p)
       .delay((index + 1) * 50)
-      .to({ x: p.x, y: -300, z: p.z }, 2500)
-      .easing(Easing.Quadratic.Out)
+      .to({ x: p.x, y: -300, z: p.z }, 1000)
+      .easing(Easing.Back.Out)
       .start()
     const lineMtl = target.line.material as Material
     lineMtl.opacity = 0.5
@@ -162,10 +162,10 @@ export class PlaygroundCTF extends Playground {
     this.composer.passes = [this.scenePass, this.bloomPass]
     this.focusTeam = null
     this.controls.enabled = true
-    // 延迟 2秒，避免频繁特写
+    // 延迟 3 秒，避免频繁特写
     setTimeout(() => {
       this.isFocus = false
-    }, 2000)
+    }, 3000)
   }
 
   updateFocusCamera() {
