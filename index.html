@@ -11,15 +11,6 @@
   </style>
 </head>
 <body>
-  <!-- <div style="position: absolute;right: 10px;top: 10px;z-index: 1000;">
-    <button id="scene-1">主监控</button>
-    <button id="scene-2">队伍详情</button>
-    <button id="scene-3">排位详情</button>
-  </div> -->
-  <!-- <div class="scene playground show"></div>
-  <div class="scene teaminfo hide"></div>
-  <div class="load-ui"></div> -->
-
   <div class="playground" id="ctf"></div>
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
@@ -27,23 +18,32 @@
     import { PlaygroundCTF, CTFAssetsLoader, TargetCTF, TeamCTF, random } from './js/main.js'
 
     async function init() {
-      const el = document.querySelector('#ctf')
+      // 加载场景所需资源
       const assets = await CTFAssetsLoader.load()
-      const playgroundCTF = new PlaygroundCTF(el, assets)
-      
+      // 初始化场景
+      const playgroundCTF = new PlaygroundCTF(document.querySelector('#ctf'), assets)
+      // 加载 队伍 和 靶标 数据
       const [targetData, teamData] = await Promise.all([
         axios.get('./json/targets.json'),
         axios.get('./json/teams.json')
       ])
+      // 初始化靶标
       const targets = targetData.data.map(item => {
+        // 靶标模型，从资源文件的建筑物中随机取一个
         const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
         return new TargetCTF(buildingModel, item.name, item.score)
       })
+      // 初始化队伍
       const teams = teamData.data.map((item) => {
+        // 队伍模型
         const teamModel = assets.aerobat
         return new TeamCTF(teamModel, item.name)
       })
+      // 向场景添加队伍和靶标
+      playgroundCTF.setTeams(teams)
+      playgroundCTF.setTargets(targets)
 
+      // 随机攻击
       function randomAttack() {
         if (!teams.length || !targets.length) return
         const team = teams[random(0, teams.length - 1)]
@@ -53,27 +53,9 @@
         setTimeout(randomAttack, Math.random() * 10000)
       }
       
-      playgroundCTF.setTeams(teams)
-      playgroundCTF.setTargets(targets)
-
       setTimeout(randomAttack, 5000)
     }
     init()
-
-    // CTFAssets.load().then(assets => {
-    //   console.log(assets)
-    //   const el = document.querySelector('#ctf')
-    //   const playgroundCTF = new PlaygroundCTF(el, assets)
-
-    //   const target = new TargetCTF(assets.buildings[3])
-    //   playgroundCTF.add(target)
-      
-    //   console.log(playgroundCTF, target)
-
-    //   setTimeout(() => {
-    //     target.beAttack()
-    //   }, 1000)
-    // })
   </script>
 </body>
 </html>
