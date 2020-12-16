@@ -1,7 +1,5 @@
 import { Object3D, PerspectiveCamera, WebGLRenderer } from 'three'
 import { h } from '../utils/dom'
-import { Target } from '../CTF/_Target'
-import { TargetCTF } from '../CTF/TargetCTF'
 
 export interface PanelOffset {
   x?: number
@@ -58,13 +56,6 @@ export class Panel {
   public destroy() {
     document.body.removeChild(this.el)
     this.el = null
-  }
-}
-
-export class TeamCTFPanel extends Panel {
-  constructor(obj, offset?: PanelOffset) {
-    super(obj, offset)
-    this.content.classList.add('panel-team')
   }
 }
 

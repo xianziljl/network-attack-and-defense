@@ -1,7 +1,7 @@
 import { BufferGeometry, Geometry } from 'three'
 import { Building } from '../common/Building'
 import { TargetCTFPanel } from './TargetCTFPanel'
-import { Team } from './Team'
+import { TeamCTF } from './TeamCTF'
 
 
 export class TargetCTF extends Building{
@@ -9,7 +9,7 @@ export class TargetCTF extends Building{
   score: number
   panel: TargetCTFPanel
   // 获胜队伍
-  winTeams: Team[] = []
+  winTeams: TeamCTF[] = []
 
   constructor(geometry: BufferGeometry | Geometry, name: string, score: number) {
     super(geometry)
@@ -18,7 +18,7 @@ export class TargetCTF extends Building{
     this.panel = new TargetCTFPanel(this, { y: 200 })
   }
 
-  beAttack(team: Team, success: boolean) {
+  beAttack(team: TeamCTF, success: boolean) {
     // 记录数据
     if (success) {
       this.panel.addItem(team.name)

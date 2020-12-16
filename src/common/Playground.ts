@@ -4,8 +4,10 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 import { update as TweenUpdate } from '@tweenjs/tween.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
-import { Stats } from '../utils/stats'
-
+// import { Stats } from '../utils/stats'
+import Stats from 'three/examples/jsm/libs/stats.module'
+import { Fire } from './Fire'
+import { Panel } from './Panel'
 
 export class Playground extends Scene{
   el: HTMLElement
@@ -24,7 +26,7 @@ export class Playground extends Scene{
   // 是否已暂停
   isPaused = false
   // 帧率
-  stats = new Stats()
+  stats = new (Stats as any)()
 
   // 鼠标位置
   static mouse = new Vector2()
@@ -34,7 +36,6 @@ export class Playground extends Scene{
     super()
     this.el = el
     this.init()
-
   }
 
   init () {
@@ -76,8 +77,10 @@ export class Playground extends Scene{
   animate() {
     if (!this.isPaused) requestAnimationFrame(this.animate.bind(this))
     this.stats.update()
-    TweenUpdate()
     this.controls.update()
+    TweenUpdate()
+    Panel.update()
+    Fire.update()
     this.composer.render()
   }
 

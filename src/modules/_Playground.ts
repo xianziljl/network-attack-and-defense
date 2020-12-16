@@ -12,11 +12,10 @@ import { MapGrid } from '../CTF/MapGrid'
 import { Target } from '../CTF/_Target'
 import { Team } from './team'
 import Terrain from '../common/Terrain'
-import { CTFAssets, loadCTFAssets } from '../common/Assets'
+import { CTFAssets, loadCTFAssets } from '../CTF/CTFAssets'
 import { Tween, Easing, update as TweenUpdate } from '@tweenjs/tween.js'
 import { Panel } from '../common/Panel'
 import { Fire } from '../common/Fire'
-import { getRandom } from '../utils/random'
 
 
 export class Playground extends Scene {

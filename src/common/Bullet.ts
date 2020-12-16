@@ -1,5 +1,6 @@
 import { Tween } from '@tweenjs/tween.js'
 import { BoxBufferGeometry, Mesh, MeshBasicMaterial, Object3D, Scene } from 'three'
+import { Playground } from './Playground'
 
 const g = new BoxBufferGeometry(3, 3, 30)
 const m = new MeshBasicMaterial({ color: 0xffff00 })
@@ -15,7 +16,7 @@ export class Bullet extends Mesh {
     Bullet.pool.push(this)
   }
 
-  static shoot(playground: Scene, from: Object3D, to: Object3D) {
+  static shoot(playground: Playground, from: Object3D, to: Object3D) {
     const bullet = Bullet.pool.find(b => !b.used) || new Bullet()
     bullet.used = true
     const sp = from.position.clone()

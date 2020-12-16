@@ -1,9 +1,8 @@
-import { AdditiveBlending, BoxGeometry, CircleBufferGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, Texture, TextureLoader } from 'three'
-import { CTFAssets } from '../common/Assets'
-import { Fire } from '../common/Fire'
+import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, CircleBufferGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, Texture, TextureLoader } from 'three'
+import { CTFAssets } from './CTFAssets'
 import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
-import { Team } from './Team'
+import { TeamCTF } from './TeamCTF'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { Panel } from '../common/Panel'
 import { MapGrid } from './MapGrid'
@@ -16,7 +15,7 @@ export class PlaygroundCTF extends Playground {
   // 场景所需资源
   assets: CTFAssets
   // 队伍
-  teams: Team[] = []
+  teams: TeamCTF[] = []
   teamGroup: Group = new Group()
   // 靶标
   targets: TargetCTF[] = []
@@ -27,7 +26,7 @@ export class PlaygroundCTF extends Playground {
   // 当前是否为特写状态
   isFocus = false
   // 当前特写的队伍
-  focusTeam: Team
+  focusTeam: TeamCTF
   // 地图网格
   mapGrid = new MapGrid()
   gridSize = 210
@@ -39,13 +38,21 @@ export class PlaygroundCTF extends Playground {
 
     Panel.camera = this.camera
 
+    // 灯光
+    const plight1 = new PointLight(0x0090ff, 2, 1000)
+    const plight2 = new PointLight(0x00d2ff, 1, 1000)
+    plight1.position.set(600, 500, 0)
+    plight2.position.set(-600, 500, 0)
+    this.add(plight1, plight2)
+    this.add(new PointLightHelper(plight1, 30), new PointLightHelper(plight2, 30))
+
     // 天空盒
     this.background = assets.cubeTexture
 
     // 地形
     const material = new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending })
     const terrainGeometry = new Terrain(assets.heightimg)
-    const edges = new EdgesGeometry(terrainGeometry)
+    const edges = new EdgesGeometry(terrainGeometry, 1)
     const terrain = new LineSegments(edges, material)
     terrain.position.set(0, -300, -300)
     terrain.scale.set(60, 700, 60)
@@ -64,10 +71,9 @@ export class PlaygroundCTF extends Playground {
     this.add(this.scan)
 
     // 地板
-    const pg = g.clone()
+    const pg = new BoxBufferGeometry(2500, 50, 2500)
     const pm = new MeshLambertMaterial({ color: 0x2a3d5c, side: DoubleSide })
     const mesh = new Mesh(pg, pm)
-    mesh.scale.set(3, 1, 3)
     mesh.position.y = -350
     this.add(mesh)
 
@@ -77,12 +83,12 @@ export class PlaygroundCTF extends Playground {
     this.animate()
   }
 
-  setTeams(teams: Team[] = []) {
+  setTeams(teams: TeamCTF[] = []) {
     this.clearTeams()
     teams.forEach(team => this.addTeam(team))
   }
 
-  addTeam(team: Team) {
+  addTeam(team: TeamCTF) {
   }
   
   clearTeams() {
@@ -133,7 +139,7 @@ export class PlaygroundCTF extends Playground {
     this.targets = []
   }
 
-  focus(team: Team) {
+  focus(team: TeamCTF) {
     if (this.isFocus || !team || this.focusTeam) return
     this.focusTeam = team
     Panel.camera = this.focusCamera
@@ -157,7 +163,5 @@ export class PlaygroundCTF extends Playground {
   animate() {
     super.animate()
     this.scan.rotation.y += 0.04
-    Panel.update()
-    Fire.update()
   }
 }

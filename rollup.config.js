@@ -5,9 +5,9 @@ import livereload from 'rollup-plugin-livereload'
 import scss from 'rollup-plugin-scss'
 
 const paths = {
+  '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   'three': '../node_modules/three/build/three.module.js',
   'three/examples/jsm/libs/stats.module': '../node_modules/three/examples/jsm/libs/stats.module.js',
-  '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   'three/examples/jsm/loaders/GLTFLoader': '../node_modules/three/examples/jsm/loaders/GLTFLoader.js',
   'three/examples/jsm/loaders/OBJLoader2': '../node_modules/three/examples/jsm/loaders/OBJLoader2.js',
   'three/examples/jsm/controls/OrbitControls': '../node_modules/three/examples/jsm/controls/OrbitControls.js',

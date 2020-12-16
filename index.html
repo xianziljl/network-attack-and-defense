@@ -24,21 +24,29 @@
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
-    import { PlaygroundCTF, CTFAssets, TargetCTF, random } from './js/main.js'
+    import { PlaygroundCTF, CTFAssetsLoader, TargetCTF, TeamCTF, random } from './js/main.js'
 
     async function init() {
-      const assets = await CTFAssets.load()
       const el = document.querySelector('#ctf')
+      const assets = await CTFAssetsLoader.load()
       const playgroundCTF = new PlaygroundCTF(el, assets)
-
-      const res = await axios.get('./json/targets.json')
-      const targetDataList = res.data
-      const targets = targetDataList.map(item => {
-        const building = assets.buildings[random(0, assets.buildings.length - 1)]
-        return new TargetCTF(building, item.name, item.score)
-      })
       
-      playgroundCTF.setTargets(targets)
+      // const [targetData, teamData] = await Promise.all([
+      //   axios.get('./json/targets.json'),
+      //   axios.get('./json/teams.json')
+      // ])
+      // const targets = targetData.data.map(item => {
+      //   const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
+      //   return new TargetCTF(buildingModel, item.name, item.score)
+      // })
+
+      const target = new TargetCTF(assets.buildings[0], '测试靶标', 1000)
+      const team = new TeamCTF(assets.aerobat, '测试队伍')
+
+      playgroundCTF.add(team)
+      playgroundCTF.addTarget(target)
+      
+      // playgroundCTF.setTargets(targets)
     }
     init()
 
