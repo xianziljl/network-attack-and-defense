@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>恒安嘉新网络攻防实训平台</title>
+  <link rel="stylesheet" href="./js/main.css">
+  <style>
+    html, body{height: 100%;}
+    .playground{width: 100%;height: 100%;}
+  </style>
+</head>
+<body>
+  <div class="playground" id="awd"></div>
+
+  <script src="./node_modules/axios/dist/axios.min.js"></script>
+  <script type="module">
+    import { PlaygroundAWD, AWDAssetsLoader, random } from './js/main.js'
+
+    async function init() {
+      const assets = await AWDAssetsLoader.load()
+      const playground = new PlaygroundAWD(document.querySelector('#awd'), assets)
+      console.log(playground)
+    }
+    init()
+  </script>
+</body>
+</html>

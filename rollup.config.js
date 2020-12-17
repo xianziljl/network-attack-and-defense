@@ -15,13 +15,6 @@ const paths = {
   'three/examples/jsm/postprocessing/RenderPass': '../node_modules/three/examples/jsm/postprocessing/RenderPass.js',
   'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
 }
-const plugins = [
-  resolve(),
-  typescript(),
-  scss(),
-  serve(),
-  livereload()
-]
 
 export default {
   input: 'src/index.ts',
@@ -31,5 +24,11 @@ export default {
     format: 'esm',
     paths
   },
-  plugins
+  plugins: [
+    resolve(),
+    typescript(),
+    scss(),
+    serve(),
+    livereload()
+  ]
 }

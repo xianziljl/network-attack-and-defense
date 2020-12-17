@@ -74,7 +74,7 @@ export class Building extends BaseObject {
       const fire = Fire.getOne()
       fire.position.copy(this.position)
       fire.position.y += this.size / 2
-      const scale = this.size / Fire.size * 1.2
+      const scale = this.size * this.scale.x / Fire.size * 1.2
       const scaleY = this.size * this.scale.y / Fire.size * 1.5
       fire.scale.set(scale, scaleY, scale)
       playground.add(fire)

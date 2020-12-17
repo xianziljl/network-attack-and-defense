@@ -41,6 +41,9 @@ export class Playground extends Scene{
   init () {
     const { renderer, camera, el, controls, composer, stats } = this
     el.appendChild(renderer.domElement)
+
+    this.renderer.shadowMap.enabled = true
+
     camera.position.z = 1000
     camera.position.y = -100
     camera.lookAt(0, 0, 0)
