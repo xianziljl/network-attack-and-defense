@@ -1,5 +1,6 @@
 import { Object3D, PerspectiveCamera, WebGLRenderer } from 'three'
 import { h } from '../utils/dom'
+import { BaseObject } from './BaseObject'
 
 export interface PanelOffset {
   x?: number
@@ -11,13 +12,13 @@ export class Panel {
   static renderer: WebGLRenderer
   static camera: PerspectiveCamera
 
-  public obj: Object3D
+  public obj: BaseObject
   public el: HTMLDivElement
   private _visible = false
   public offset: PanelOffset
   public content: HTMLDivElement
 
-  constructor(obj: Object3D, offset?: PanelOffset, elselector: string = '.playground') {
+  constructor(obj: BaseObject, offset?: PanelOffset) {
     this.obj = obj
     this.el = h('div') as HTMLDivElement
     this.el.className = 'panel'
@@ -25,7 +26,13 @@ export class Panel {
     this.content.className = 'panel-content'
     this.content.innerHTML = this.obj.name || '_'
     this.el.appendChild(this.content)
-    document.querySelector(elselector).appendChild(this.el)
+    let panelsContainer = document.querySelector('.panels')
+    if (!panelsContainer) {
+      panelsContainer = h('div')
+      panelsContainer.className = 'panels'
+      document.body.appendChild(panelsContainer)
+    }
+    panelsContainer.appendChild(this.el)
     Panel.instances.push(this)
 
     this.offset = offset || { x: 0, y: 0, z: 0 }

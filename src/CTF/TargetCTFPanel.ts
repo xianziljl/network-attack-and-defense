@@ -5,7 +5,7 @@ import { TargetCTF } from './TargetCTF'
 export class TargetCTFPanel extends Panel {
   titleEl: HTMLDivElement
   listEl: HTMLDivElement
-  private _type: 1 | 2 = 1
+  private _type: 1 | 2 | 3 = 1
   constructor(target: TargetCTF, offset?: PanelOffset) {
     super(target, offset)
     this.content.innerHTML = ''
@@ -35,8 +35,10 @@ export class TargetCTFPanel extends Panel {
     this.listEl.appendChild(item)
   }
 
-  set type(type: 1 | 2) {
-    this.content.classList.remove(`panel-target-type-${type === 1 ? 2 : 1}`)
+  set type(type: 1 | 2 | 3) {
+    this.content.classList.remove(`panel-target-type-1`)
+    this.content.classList.remove(`panel-target-type-2`)
+    this.content.classList.remove(`panel-target-type-3`)
     this.content.classList.add(`panel-target-type-${type}`)
     this._type = type
   }
@@ -46,7 +48,7 @@ export class TargetCTFPanel extends Panel {
 
   update() {
     super.update()
-    if (this._type === 2) {
+    if (this._type !== 1) {
       this.el.style.visibility = 'visible'
     }
   }

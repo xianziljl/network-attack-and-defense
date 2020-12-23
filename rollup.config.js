@@ -5,7 +5,6 @@ import livereload from 'rollup-plugin-livereload'
 import scss from 'rollup-plugin-scss'
 
 const paths = {
-  '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   'three': '../node_modules/three/build/three.module.js',
   'three/examples/jsm/libs/stats.module': '../node_modules/three/examples/jsm/libs/stats.module.js',
   'three/examples/jsm/loaders/GLTFLoader': '../node_modules/three/examples/jsm/loaders/GLTFLoader.js',
@@ -14,21 +13,38 @@ const paths = {
   'three/examples/jsm/postprocessing/EffectComposer': '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js',
   'three/examples/jsm/postprocessing/RenderPass': '../node_modules/three/examples/jsm/postprocessing/RenderPass.js',
   'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
+
+  '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
+  'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',
+  'impetus': '../node_modules/impetus/src/Impetus.js'
 }
 
-export default {
+const external = Object.keys(paths)
+
+const plugins = [
+  resolve(),
+  typescript(),
+  scss(),
+  serve(),
+  livereload()
+]
+
+export default [{
   input: 'src/index.ts',
-  external: Object.keys(paths),
+  external,
   output: {
     file: 'js/main.js',
     format: 'esm',
     paths
   },
-  plugins: [
-    resolve(),
-    typescript(),
-    scss(),
-    serve(),
-    livereload()
-  ]
-}
+  plugins
+}, {
+  input: 'src/editor.ts',
+  external,
+  output: {
+    file: 'js/map-editor.js',
+    format: 'esm',
+    paths
+  },
+  plugins
+}]

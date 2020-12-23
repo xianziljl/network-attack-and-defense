@@ -20,17 +20,18 @@
     async function init() {
       // 加载场景所需资源
       const assets = await CTFAssetsLoader.load()
-      // 初始化场景
-      const playgroundCTF = new PlaygroundCTF(document.querySelector('#ctf'), assets)
       // 加载 队伍 和 靶标 数据
       const [targetData, teamData] = await Promise.all([
         axios.get('./json/targets.json'),
         axios.get('./json/teams.json')
       ])
+      // 初始化场景
+      const playgroundCTF = new PlaygroundCTF(document.querySelector('#ctf'), assets)
       // 初始化靶标
       const targets = targetData.data.map(item => {
         // 靶标模型，从资源文件的建筑物中随机取一个
         const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
+
         return new TargetCTF(buildingModel, item.name, item.score)
       })
       // 初始化队伍

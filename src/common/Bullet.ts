@@ -22,7 +22,7 @@ export class Bullet extends Mesh {
     const sp = from.position.clone()
     const ep = to.position.clone()
     sp.applyMatrix4(from.parent.matrixWorld)
-    ep.applyMatrix4(playground.matrixWorld)
+    ep.applyMatrix4(to.parent.matrixWorld)
     bullet.position.set(sp.x, sp.y, sp.z)
     bullet.lookAt(to.position)
     playground.add(bullet)

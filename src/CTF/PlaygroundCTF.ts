@@ -94,6 +94,9 @@ export class PlaygroundCTF extends Playground {
     const index = this.teams.length + 1
     const grid = this.mapGrid[index]
     const { x, y } = grid
+
+    const rotationY = -Math.atan2(y, x)
+    team.rotation.y = team.initialRotationY = rotationY
     team.position.set(x * this.gridSize + this.gridSize / 2, 300, y * this.gridSize + this.gridSize / 2)
     this.teamGroup.add(team)
     this.teams.push(team)

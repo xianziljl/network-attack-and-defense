@@ -29,7 +29,7 @@ export class TargetCTF extends Building{
       // 执行爆炸、变色、显示面板
       this.explode()
       this.status = success ? 2 : 3
-      this.panel.type = 2
+      this.panel.type = this.status
 
       setTimeout(() => {
         // 结束

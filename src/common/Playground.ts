@@ -73,6 +73,7 @@ export class Playground extends Scene{
     this.el.appendChild(stats.domElement)
     
     window.addEventListener('resize', this.resize.bind(this))
+    // document.addEventListener('visibilitychange', e => this.isPaused = document.hidden)
     // window.addEventListener('mousemove', this.onMousemove.bind(this))
   }
 
@@ -82,7 +83,6 @@ export class Playground extends Scene{
     this.controls.update()
     TweenUpdate()
     Panel.update()
-    Fire.update()
     this.composer.render()
   }
 

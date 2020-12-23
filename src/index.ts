@@ -1,4 +1,4 @@
-import './style.scss'
+import './style/style.scss'
 
 export { CTFAssetsLoader } from './CTF/CTFAssets'
 export { PlaygroundCTF } from './CTF/PlaygroundCTF'

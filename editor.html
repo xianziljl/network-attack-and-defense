@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地图编辑</title>
+  <style>
+    body{color: #444;}
+    div{box-sizing: border-box;}
+    :root{
+      --c-1: #3cb8ff;
+      --c-2: #00fff2;
+      --c-3: #00ff4c;
+      --c-4: #ffd900;
+      --c-5: #ff533c;
+      --c-6: #b83dff;
+    }
+    @font-face {
+      font-family: 'Material Icons';
+      font-style: normal;
+      font-weight: 400;
+      src: url(./assets/material-icons-outline.woff2);
+    }
+    .icon{font-family: 'Material Icons';font-size: 22px;}
+    .map-editor{user-select: none;}
+    .row{display: flex;align-items: center;}
+    .f1{flex: 1;}
+    .map, .tools{width: 1000px;}
+    .map{position: relative;display: grid;height: 500px;box-shadow: 0 0 0 1px #ddd;}
+    .map-cell{border: 1px solid #eee;box-sizing: border-box;}
+    .map-mode-2 .map-cell:hover{border-color: #00ccff;z-index: 10;}
+    .dvc{width: 60px;height: 60px;border: 1px solid #ddd;margin-left: 10px;font-size: 30px;
+      display: flex;align-items: center;justify-content: center;cursor: pointer;color: #666;transition: all .1s;}
+    .dvc:hover{background-color: rgba(0, 0, 0, 0.05);}
+    .area, .area-temp{position: absolute;pointer-events: none;box-sizing: border-box;}
+    .area{border: 1px solid #00ccff;z-index: 2;}
+    .area:hover, .device:hover{box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);}
+    .area>div{position: absolute;width: 100%;height: 100%;background-color: #00ccff;opacity: 0.1;}
+    .area.focus>div{opacity: 0.4;}
+    .area.focus{border-width: 2px;}
+    .area-temp{border: 1px solid orange;z-index: 9999;}
+    .map-mode-1 .area{pointer-events: auto;}
+    .toolbar{position: fixed;left: 0;top: 0;width: 0;height: 40px;display: flex;justify-content: center;z-index: 9999;}
+    .tb-ctn{background: rgba(0,0,0,0.8);color: #fff;padding: 0px 10px;border-radius: 4px;}
+    .tb-item{width: 40px;height: 100%;display: flex;align-items: center;justify-content: center;cursor: pointer;}
+    .tb-item:hover{background-color: rgba(255,255,255,0.2);}
+    .tb-color{width:16px;height: 16px;background-color: #00ccff;border-radius: 50%;border: 1px solid #fff;}
+    .map-dragging .area, .map-dragging .device{pointer-events: none;}
+    .tool-btn{text-align: center;font-size: 12px;color: #666;padding: 10px 0;border: 1px solid transparent;
+      cursor: pointer;margin-right: 10px;width: 70px;}
+    .tool-btn .icon{font-size: 30px;margin-bottom: 5px;}
+    .tool-btn:hover{background-color: rgba(0, 0, 0, 0.05);}
+    .tool-btn.on{color: #138ee0;}
+    .tool-btn.disabled{opacity: 0.5;pointer-events: none;}
+    .device{position: absolute;background-color: rgba(0, 0, 0, 0.15);border: 1px solid #aaa;border-color: #aaa!important;
+      display: flex;align-items: center;justify-content: center;}
+    .tb-colors{position: absolute;background-color: #444;height: 36px;padding: 0 10px;
+      border-radius: 4px;bottom: 100%;display: none;left: -130px;}
+    .tb-item:hover .tb-colors{display: flex;}
+    .device input{background: none;appearance: none;border: 1px solid transparent;padding: 5px;font-size: 12px;outline: none;
+      color: #444;width: 100%;box-sizing: border-box;position: absolute;left: 0;top: 0;}
+    .device.focus{border-width: 2px;background-color: rgba(0, 0, 0, 0.3);}
+    .device .icon{color: #fff;text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);}
+  </style>
+</head>
+<body style="margin: 100px">
+
+  <div class="map-editor" id="map-editor">
+    <div class="map"
+      :class="['map-mode-' + mode, { 'map-dragging': dragging.target }]"
+      :style="{
+        gridTemplateRows: 'repeat('+ rows +', 1fr)',
+        gridTemplateColumns: 'repeat('+ colums +', 1fr)'
+      }">
+      <template v-for="y in rows">
+        <div
+          class="map-cell"
+          v-for="x in colums"
+          :key="'cell-' + y + '-' + x"
+          @mousedown="onCellMousedown(x - 1, y - 1)"
+          @mouseenter="onCellMouseenter(x - 1, y - 1)"></div>
+      </template>
+      <!-- 当前正在选择的区域 -->
+      <div class="area-temp"
+        v-if="mode === 2 && area.s && areaTemp"
+        key="area-temp"
+        :style="{
+          width: areaTemp.w * cell.w + 'px',
+          height: areaTemp.h * cell.h + 'px',
+          left: areaTemp.x * cell.w + 'px',
+          top: areaTemp.y * cell.h + 'px'
+        }"></div>
+
+      <div
+        v-for="(a, i) in result"
+        :key="a.id"
+        :data-id="a.id"
+        :class="[a.type, a.type + '-' + a.c, { 'focus': focus === a }]"
+        :style="{
+          borderColor: 'var(--c-'+ a.c +')',
+          width: a.w * cell.w + 'px',
+          height: a.h * cell.h + 'px',
+          left: a.x * cell.w + 'px',
+          top: a.y * cell.h + 'px',
+          zIndex: rows * colums - a.w * a.h
+        }"
+        @mousedown.stop="onMousedown(a)">
+        <div :style="{ backgroundColor: 'var(--c-'+ a.c +')' }"></div>
+        <template v-if="a.type === 'device'">
+          <input type="text" v-model="a.name" placeholder="请输入" @keydown.stop @mousedown.stop @change="addHistory()">
+          <div class="icon" :style="{ fontSize: a.w * cell.w * 0.5 + 'px' }">{{getIcon(a.c)}}</div>
+        </template>
+      </div>
+    </div>
+
+    <div
+      class="toolbar"
+      v-if="focus"
+      :style="{ left: toolbar.x + 'px', top: toolbar.y + 'px' }">
+      <div class="row tb-ctn" @mousedown.stop>
+        <!-- 区域颜色工具 -->
+        <template v-if="focus.type === 'area'">
+          <div class="tb-item">
+            <div class="tb-color" :style="{backgroundColor : 'var(--c-'+ focus.c +')'}"></div>
+            <div class="tb-colors row">
+              <div class="tb-item" v-for="i in 6" :key="i" @click="focus.c = i;addHistory()">
+                <div class="tb-color" :style="{backgroundColor : 'var(--c-'+ i +')'}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="tb-item icon" @click="zoomWidth(1);addHistory()" title="增加宽度" style="transform:rotate(90deg);">unfold_more</div>
+          <div class="tb-item icon" @click="zoomWidth(-1);addHistory()" title="减少宽度" style="transform:rotate(90deg);">unfold_less</div>
+          <div class="tb-item icon" @click="zoomHeight(1);addHistory()" title="增加高度">unfold_more</div>
+          <div class="tb-item icon" @click="zoomHeight(-1);addHistory()" title="减少高度">unfold_less</div>
+        </template>
+        <template v-else>
+          <div class="tb-item icon" @click="zoomWidth(1);zoomHeight(1);addHistory()" title="放大">zoom_in</div>
+          <div class="tb-item icon" @click="zoomWidth(-1);zoomHeight(-1);addHistory()" title="缩小">zoom_out</div>
+        </template>
+        <div class="tb-item icon" title="删除" @click="removeFocus">delete</div>
+      </div>
+    </div>
+
+    <div class="row tools" style="margin-top:20px;">
+      <div class="tool-btn" :class="{on: mode === 1}" @click="mode = 1">
+        <div class="icon" style="transform: scaleX(-1)">near_me</div>
+        <div>选择工具</div>
+      </div>
+      <div class="tool-btn" :class="{on: mode === 2}" @click="mode = 2">
+        <div class="icon">photo_size_select_small</div>
+        <div>区域工具</div>
+      </div>
+      <div class="tool-btn" @click="undo" :class="{ disabled: history.current === 0 }">
+        <div class="icon">undo</div>
+        <div>撤销</div>
+      </div>
+      <div class="tool-btn" @click="redo" :class="{ disabled: history.current === history.list.length - 1 }">
+        <div class="icon">redo</div>
+        <div>重做</div>
+      </div>
+      <div class="f1"></div>
+      <div class="dvc icon"
+        v-for="d in devices"
+        :key="d.type"
+        :title="d.name"
+        @click="addDevice(d)">{{d.icon}}</div>
+    </div>
+    <!-- <div>{{result}}</div> -->
+  </div>
+
+  <script type="module">
+    import Vue from './node_modules/vue/dist/vue.esm.browser.min.js'
+
+    const devices = [
+      { type: 1, name: '服务器', icon: 'storage' },
+      { type: 2, name: '网络设备', icon: 'wifi' },
+      { type: 3, name: '安全设备', icon: 'security' },
+      { type: 4, name: 'IOT终端设备', icon: 'important_devices' },
+      { type: 5, name: '通信网设备', icon: 'dns' },
+      { type: 6, name: '工控网设备', icon: 'settings_applications' },
+      { type: 7, name: '其它设备', icon: 'devices_other' },
+    ]
+
+    const editor = new Vue({
+      el: '#map-editor',
+      data: {
+        mode: 1, // 1: select, 2: area, 3: device
+        rows: 15, // 行数
+        colums: 30, // 列数
+        devices,
+        // 每个单元格大小，在 mounted 中获取
+        cell: { w: 1, h: 1 },
+        // 拖动
+        dragging: {
+          target: null,
+          init: { x: 0, y: 0 },
+          isDraged: false, // 是否移动，用于判断是否添加历史记录
+          sx: null,
+          sy: null,
+          mx: null,
+          my: null
+        },
+        // 选中
+        focus: null,
+        // 选区相关
+        area: {
+          s: null, // { x:0, y: 0 } 开始坐标
+          m: { x: 0, y: 0 }, // 鼠标移动坐标
+        },
+        // 工具条坐标
+        toolbar: { x: 0, y: 0 },
+        // 最终结果
+        result: [],
+        history: {
+          list: [],
+          current: 0
+        }
+      },
+      watch: {
+        mode() {
+          this.focus = null
+        },
+        focus: {
+          deep: true,
+          handler(val) {
+            if (!val) return
+            const focusEl = this.$el.querySelector(`[data-id=${val.id}]`)
+            if (!focusEl) return
+            this.$nextTick(() => {
+              const rect = focusEl.getBoundingClientRect()
+              this.toolbar.x = rect.x + rect.width / 2
+              this.toolbar.y = rect.y - 45
+            })
+          }
+        }
+      },
+      mounted () {
+        try {
+          // 读取缓存
+          let mapEditorCache = localStorage.getItem('mapEditorCache')
+          if (mapEditorCache) {
+            mapEditorCache = JSON.parse(mapEditorCache)
+            this.result = mapEditorCache
+            this.addHistory()
+          }
+        } catch (e) {
+          console.log(e)
+        }
+        const cell = this.$el.querySelector('.map-cell')
+        const rect = cell.getBoundingClientRect()
+        this.cell.w = rect.width, this.cell.h = rect.height
+        window.addEventListener('mousedown', e => {
+          this.focus = null
+        })
+        window.addEventListener('keydown', e => {
+          if (e.key === 'Backspace') this.removeFocus()
+          if (e.key === 'z') {
+            if (e.metaKey && e.shiftKey) this.redo()
+            if (e.metaKey && !e.shiftKey) this.undo()
+          }
+        })
+        window.addEventListener('mouseup', this.onMouseup)
+      },
+      computed: {
+        areaTemp() {
+          if (this.mode !== 2) return null
+          const { cell, area } = this
+          if (!area.s) return null
+          return this.getArea(area.s, area.m)
+        }
+      },
+      methods: {
+        onCellMousedown(x, y) {
+          const { mode } = this
+          if (mode === 1) {
+            console.log('xxxx')
+            return
+          }
+          if (mode === 2) {
+            this.area.s = this.area.m = { x, y }
+          }
+        },
+        onCellMouseenter(x, y) {
+          const { mode, dragging } = this
+          if (mode === 1) {
+            if (!dragging.target) return
+            if (dragging.sx === null) {
+              dragging.sx = x
+              dragging.sy = y
+              dragging.mx = x
+              dragging.my = y
+              dragging.init.x = dragging.target.x
+              dragging.init.y = dragging.target.y
+            } else {
+              dragging.mx = x
+              dragging.my = y
+              dragging.isDraged = true
+            }
+            const { sx, sy, mx, my } = dragging
+            const _mx = mx - sx
+            const _my = my - sy
+            let _x = dragging.init.x + mx - sx
+            let _y = dragging.init.y + my - sy
+            if (_x < 0) _x = 0
+            if (_y < 0) _y = 0
+            if (_x > this.colums - dragging.target.w) _x = this.colums - dragging.target.w
+            if (_y > this.rows - dragging.target.h) _y = this.rows - dragging.target.h
+            dragging.target.x = _x
+            dragging.target.y = _y
+          }
+          if (mode === 2) {
+            if (!this.area.s) return
+            this.area.m = { x, y }
+          }
+        },
+        onMousedown(node) {
+          const { focus, dragging } = this
+          this.focus = node
+          dragging.target = node
+        },
+        onMouseup() {
+          if (this.dragging.isDraged) {
+            this.addHistory()
+          }
+          this.dragging.target = null
+          this.dragging.sx = null
+          this.dragging.sy = null
+          this.dragging.mx = null
+          this.dragging.my = null
+          this.dragging.isDraged = false
+          this.dragging.init = { x: 0, y: 0 }
+          if (this.mode === 1) {
+            return
+          }
+          if (this.mode === 2) {
+            if (!this.area.s) return
+            const area = JSON.parse(JSON.stringify(this.areaTemp))
+            this.result.push(area)
+            this.area.s = this.area.m = null
+            this.addHistory()
+          }
+        },
+
+        removeFocus() {
+          const { focus, result } = this
+          if (!focus) return
+          result.splice(result.indexOf(focus), 1)
+          this.focus = null
+          this.addHistory()
+        },
+
+        addDevice(d) {
+          const defaultSize = 3
+          const device = {
+            type: 'device',
+            id: 'd-' + Math.random().toString(16).substr(2),
+            name: d.name,
+            w: defaultSize,
+            h: defaultSize,
+            x: parseInt(this.colums / 2) - 1,
+            y: parseInt(this.rows / 2) - 1,
+            c: d.type
+          }
+          this.result.push(device)
+          this.addHistory()
+          this.$nextTick(() => {
+            this.focus = device
+          })
+        },
+        zoomWidth(val = 0) {
+          const { colums, focus } = this
+          let w = focus.w + val
+          let x = focus.x
+          if (w > colums) w = colums
+          if (w + focus.x > colums - 1) x = colums - w
+          if (x < 0) x = 0
+          if (w < 1) w = 1
+          focus.w = w
+          focus.x = x
+        },
+        zoomHeight(val = 0) {
+          const { rows, focus } = this
+          let h = focus.h + val
+          let y = focus.y
+          if (h > rows) h = rows
+          if (h + focus.y > rows - 1) y = rows - h
+          if (y < 0) y = 0
+          if (h < 1) h = 1
+          focus.h = h
+          focus.y = y
+        },
+        getIcon(type) {
+          const dvc = this.devices.find(d => d.type === type)
+          if (!dvc) return ''
+          return dvc.icon
+        },
+        getArea(s, e) {
+          const x = Math.min(s.x, e.x)
+          const y = Math.min(s.y, e.y)
+          const ex = Math.max(s.x, e.x)
+          const ey = Math.max(s.y, e.y)
+          const w = ex - x + 1
+          const h = ey - y + 1
+          const id = 'a-' + Math.random().toString(16).substr(2)
+          return {  type: 'area', id, x, y, w, h, c: 1 }
+        },
+        addHistory() {
+          const { result, history } = this
+          const str = JSON.stringify(result)
+          if (history.current < history.list.length - 1) {
+            history.list.splice(history.current + 1, history.list.length)
+          }
+          history.list.push(str)
+          if (history.list.length > 30) history.list.shift()
+          history.current = history.list.length - 1
+          localStorage.setItem('mapEditorCache', str)
+        },
+        undo() {
+          const { current, list } = this.history
+          this.history.current = current === 0 ? 0 : current - 1
+          const str = list[this.history.current]
+          if (str) {
+            this.result = JSON.parse(str)
+            localStorage.setItem('mapEditorCache', str)
+          }
+        },
+        redo() {
+          const { history } = this
+          if (history.current >= history.list.length - 1) return
+          history.current += 1
+          const str = history.list[history.current]
+          if (str) {
+            this.result = JSON.parse(str)
+            localStorage.setItem('mapEditorCache', str)
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>

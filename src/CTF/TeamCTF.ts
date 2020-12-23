@@ -1,5 +1,5 @@
 import { Easing, Tween } from '@tweenjs/tween.js'
-import { AdditiveBlending, BoxGeometry, BufferGeometry, DoubleSide, Geometry, Group, LineSegments, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PointLight, PointLightHelper, Scene, TextureLoader } from 'three'
+import { AdditiveBlending, BoxGeometry, BufferGeometry, DoubleSide, Euler, Geometry, Group, LineSegments, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PointLight, PointLightHelper, Scene, TextureLoader } from 'three'
 import { broadcast } from '../utils/broadcast'
 import { Bullet } from '../common/Bullet'
 import { PlaygroundCTF } from './PlaygroundCTF'
@@ -27,9 +27,12 @@ export class TeamCTF extends BaseObject {
   panel: TeamCTFPanel
   box: LineSegments
   mesh: Mesh
-  cpos = new Object3D() // 一个虚拟的点，用于标识特写摄像机位置
-
+  // 一个虚拟的点，用于标识特写摄像机位置
+  cpos = new Object3D()
+  // 获胜记录
   winRecords: string[] = []
+  // 初始旋转角度
+  initialRotationY = 0
 
   constructor(mesh: Mesh, name: string) {
     super()
@@ -106,7 +109,7 @@ export class TeamCTF extends BaseObject {
     this.success = false
 
     new Tween(this.rotation)
-      .to({ x: 0, y: 0, z: 0 }, 400)
+      .to({ x: 0, y: this.initialRotationY, z: 0 }, 400)
       .start()
     new Tween(this.position)
       .to({ y: 300 })
