@@ -28,7 +28,7 @@
     .map, .tools{width: 1000px;}
     .map{position: relative;display: grid;height: 500px;box-shadow: 0 0 0 1px #ddd;}
     .map-cell{border: 1px solid #eee;box-sizing: border-box;}
-    .map-mode-2 .map-cell:hover{border-color: #00ccff;z-index: 10;}
+    .map-mode-2 .map-cell:hover{border-color: #00ccff;z-index: 9999;}
     .dvc{width: 60px;height: 60px;border: 1px solid #ddd;margin-left: 10px;font-size: 30px;
       display: flex;align-items: center;justify-content: center;cursor: pointer;color: #666;transition: all .1s;}
     .dvc:hover{background-color: rgba(0, 0, 0, 0.05);}
@@ -39,7 +39,7 @@
     .area.focus>div{opacity: 0.4;}
     .area.focus{border-width: 2px;}
     .area-temp{border: 1px solid orange;z-index: 9999;}
-    .map-mode-1 .area{pointer-events: auto;}
+    .map-mode-1 .area, .map-mode-1 .device{pointer-events: auto;}
     .toolbar{position: fixed;left: 0;top: 0;width: 0;height: 40px;display: flex;justify-content: center;z-index: 9999;}
     .tb-ctn{background: rgba(0,0,0,0.8);color: #fff;padding: 0px 10px;border-radius: 4px;}
     .tb-item{width: 40px;height: 100%;display: flex;align-items: center;justify-content: center;cursor: pointer;}
@@ -53,7 +53,7 @@
     .tool-btn.on{color: #138ee0;}
     .tool-btn.disabled{opacity: 0.5;pointer-events: none;}
     .device{position: absolute;background-color: rgba(0, 0, 0, 0.15);border: 1px solid #aaa;border-color: #aaa!important;
-      display: flex;align-items: center;justify-content: center;}
+      display: flex;align-items: center;justify-content: center;pointer-events: none;}
     .tb-colors{position: absolute;background-color: #444;height: 36px;padding: 0 10px;
       border-radius: 4px;bottom: 100%;display: none;left: -130px;}
     .tb-item:hover .tb-colors{display: flex;}
@@ -107,7 +107,7 @@
         @mousedown.stop="onMousedown(a)">
         <div :style="{ backgroundColor: 'var(--c-'+ a.c +')' }"></div>
         <template v-if="a.type === 'device'">
-          <input type="text" v-model="a.name" placeholder="请输入" @keydown.stop @mousedown.stop @change="addHistory()">
+          <input type="text" v-model="a.name" placeholder="请输入" @keydown.stop @mousedown.stop="focus=null" @change="addHistory()">
           <div class="icon" :style="{ fontSize: a.w * cell.w * 0.5 + 'px' }">{{getIcon(a.c)}}</div>
         </template>
       </div>
@@ -165,7 +165,9 @@
         :title="d.name"
         @click="addDevice(d)">{{d.icon}}</div>
     </div>
-    <!-- <div>{{result}}</div> -->
+    <div style="margin-top: 20px;">
+      <a href="./awd.html">AWD</a>
+    </div>
   </div>
 
   <script type="module">

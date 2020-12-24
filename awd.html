@@ -19,6 +19,10 @@
 
     async function init() {
       const assets = await AWDAssetsLoader.load()
+      let data = localStorage.getItem('mapEditorCache')
+      if (data) data = JSON.parse(data)
+      else data = []
+      console.log(data)
       const playground = new PlaygroundAWD(document.querySelector('#awd'), assets)
       console.log(playground)
     }

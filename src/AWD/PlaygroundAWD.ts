@@ -1,53 +1,121 @@
-import { DoubleSide, Mesh, MeshLambertMaterial, MeshStandardMaterial, PointLight, PointLightHelper, PointLightShadow } from 'three'
+import { AdditiveBlending, AxesHelper, DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial, NormalBlending, PlaneBufferGeometry, PointLight, PointLightHelper, PointLightShadow, SpotLight, Texture, TextureLoader } from 'three'
 import { Building } from '../common/Building'
 import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
 import { AWDAssets } from './AWDAssets'
 
+const GRID_SIZE = 60
+const ROWS = 15
+const COLUMS = 30
+const WIDTH = GRID_SIZE * COLUMS
+const HEIGHT = GRID_SIZE * ROWS
 export class PlaygroundAWD extends Playground {
   assets: AWDAssets
 
+  // grids: Array<{x: number, y: number}>
+
   constructor(el: HTMLElement, assets: AWDAssets) {
     super(el)
+    // this.fog = null
     this.assets = assets
 
     this.background = assets.cubeTexture
 
-    this.camera.fov = 60
+    this.ambientLight.intensity - 0.5
+
+    this.bloomPass.threshold = 0.5
+
+    this.camera.fov = 70
     this.camera.position.y = 800
+    this.camera.position.z = 600
 
-    const plane = assets.plane1
-    const mtl = plane.material as MeshStandardMaterial
-    mtl.roughness = 0.9
-    mtl.side = DoubleSide
-    plane.scale.set(5, 5, 5)
-    this.add(plane)
+    const pg = new PlaneBufferGeometry(WIDTH, HEIGHT)
+    pg.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
+    const normalMap = new TextureLoader().load('/assets/imgs/plane-map.png')
+    const pm = new MeshStandardMaterial({
+      color: 0x666666,
+      roughness: 0.7,
+      side: DoubleSide,
+      normalMap
+    }) 
+    const plane = new Mesh(pg, pm)
 
-    const blueLight = new PointLight(0x2937ff, 2, 1500)
-    const redLight = new PointLight(0xff0000, 1.6, 900)
-    const whiteLight = new PointLight(0xffffff, 0.03)
+    const pm1 = pm.clone()
+    pm1.map = new TextureLoader().load('/assets/imgs/shadow.png')
+    const plane1 = new Mesh(pg, pm1)
+    plane1.position.set(400, -50, 200)
 
-    console.log(redLight)
+    const pm2 = pm.clone()
+    pm2.map = new TextureLoader().load('/assets/imgs/shadow-1.png')
+    const plane2 = new Mesh(pg, pm2)
+    plane2.scale.set(2, 1, 3.2)
+    plane2.position.set(0, -100, 0)
 
-    whiteLight.position.set(0, 1000, 0)
-    blueLight.position.set(700, 500, 0)
-    redLight.position.set(-600, 300, 0)
-    this.add(redLight, blueLight, whiteLight)
-    this.add(
-      new PointLightHelper(redLight, 50),
-      new PointLightHelper(blueLight, 50),
-      new PointLightHelper(whiteLight, 50)
+    this.add(plane, plane1, plane2)
+
+    // 网格
+    const gridGmt = new PlaneBufferGeometry(GRID_SIZE, GRID_SIZE)
+    gridGmt.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
+    const grid = new LineSegments(
+      new EdgesGeometry(gridGmt, 0.1),
+      new LineBasicMaterial({ color: 0x2937ff, blending: AdditiveBlending, transparent: true, opacity: 0.15 })
     )
+    // this.add(grid)
+    for (let i = 0; i < ROWS; i++) {
+      for (let j = 0; j < COLUMS; j++) {
+        const g = grid.clone()
+        g.position.x = j * GRID_SIZE - WIDTH / 2 + GRID_SIZE / 2
+        g.position.z = i * GRID_SIZE - HEIGHT / 2 + GRID_SIZE / 2
+        g.position.y = 1
+        this.add(g)
+      }
+    }
 
-    const building = new Building(assets.buildings[2])
+    const blueLight = new PointLight(0x2937ff, 2.5, 1500)
+    const blueLight1 = new PointLight(0x2937ff, 2.5, 1500)
+    const redLight = new PointLight(0xff0000, 1.3, 900)
+    const redLight1 = new PointLight(0xff0000, 1.3, 900)
+    const whiteLight = new PointLight(0xffffff, 0.03, 3000)
+    
+
+    blueLight.position.set(1000, 600, -400)
+    blueLight1.position.set(1000, 600, 400)
+    blueLight.decay = 1
+    console.log(blueLight)
+
+    redLight.position.set(-1000, 300, -250)
+    redLight1.position.set(-1000, 300, 250)
+
+    whiteLight.position.set(0, 1000, -300)
+    
+    this.add(redLight, redLight1, blueLight, blueLight1, whiteLight)
+    // this.add(
+    //   new PointLightHelper(blueLight, 50),
+    //   new PointLightHelper(blueLight1, 50),
+    //   new PointLightHelper(redLight, 50),
+    //   new PointLightHelper(redLight1, 50),
+    //   new PointLightHelper(whiteLight, 50)
+    // )
+
+    const building = new Building(assets.buildings[3], GRID_SIZE * 3)
+    building.status = 1
     building.position.y = 10
     this.add(building)
+    console.log(building)
     
     this.controls.autoRotate = false
 
     this.camera.lookAt(0, 300, 0)
 
+    this.add(new AxesHelper(500))
+
     this.resize()
     this.animate()
+  }
+  addDevice(device: any) {
+
+  }
+  addArea() {
+    
   }
 }

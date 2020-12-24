@@ -1,4 +1,4 @@
-import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, CircleBufferGeometry, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, Texture, TextureLoader, Vector3 } from 'three'
+import { AdditiveBlending, BoxBufferGeometry, BoxGeometry, CircleBufferGeometry, DirectionalLight, DoubleSide, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, Texture, TextureLoader, Vector3 } from 'three'
 import { CTFAssets } from './CTFAssets'
 import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
@@ -41,6 +41,10 @@ export class PlaygroundCTF extends Playground {
     this.resize()
 
     // 灯光
+    const dirLight = new DirectionalLight(0xffffff, 0.3)
+    dirLight.position.set(1500, 800, 3000)
+    this.add(dirLight)
+
     const plight1 = new PointLight(0x0090ff, 2, 1000)
     const plight2 = new PointLight(0x00d2ff, 1, 1000)
     plight1.position.set(550, 500, 0)
@@ -112,7 +116,7 @@ export class PlaygroundCTF extends Playground {
 
   setTargets(targets: TargetCTF[] = []) {
     this.clearTargets()
-    targets.forEach(item => this.addTarget(item))
+    targets.sort((a, b) => b.score - a.score).forEach(item => this.addTarget(item))
   }
 
   addTarget(target: TargetCTF) {

@@ -7,7 +7,4 @@ export class BaseObject extends Object3D{
     while (p && p.type !== 'Scene') p = p.parent
     return p as Playground
   }
-
-  onMouseenter() {}
-  onMouseout() {}
 }

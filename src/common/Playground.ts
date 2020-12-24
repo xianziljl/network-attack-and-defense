@@ -11,6 +11,8 @@ import { Panel } from './Panel'
 
 export class Playground extends Scene{
   el: HTMLElement
+  // 环境光
+  ambientLight = new AmbientLight(0xffffff, 0.3)
   // 摄像机
   camera = new PerspectiveCamera(72, 1, 0.1, 5000)
   // 渲染器
@@ -51,11 +53,8 @@ export class Playground extends Scene{
     camera.updateMatrixWorld(true)
     // 雾效果
     this.fog = new FogExp2(0x0f1022, 0.0008)
-    // 灯光
-    this.add(new AmbientLight(0xffffff, 0.3)) // 环境光
-    const dirLight = new DirectionalLight(0xffffff, 0.3)
-    dirLight.position.set(1500, 800, 3000)
-    this.add(dirLight)
+    // 环境光
+    this.add(this.ambientLight)
 
     composer.passes = [this.scenePass, this.bloomPass]
 
