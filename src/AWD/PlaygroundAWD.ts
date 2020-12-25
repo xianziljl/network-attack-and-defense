@@ -1,16 +1,21 @@
-import { AdditiveBlending, AxesHelper, DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial, NormalBlending, PlaneBufferGeometry, PointLight, PointLightHelper, PointLightShadow, SpotLight, Texture, TextureLoader } from 'three'
+import { AdditiveBlending, AxesHelper, DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Matrix4, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial, NormalBlending, PerspectiveCamera, PlaneBufferGeometry, PointLight, PointLightHelper, PointLightShadow, SpotLight, Texture, TextureLoader, WebGLRenderer } from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { Building } from '../common/Building'
+import { Panel } from '../common/Panel'
 import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
 import { AWDAssets } from './AWDAssets'
+import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass'
 
-const GRID_SIZE = 60
-const ROWS = 15
-const COLUMS = 30
-const WIDTH = GRID_SIZE * COLUMS
-const HEIGHT = GRID_SIZE * ROWS
+export const GRID_SIZE = 60
+export const ROWS = 15
+export const COLUMS = 30
+export const WIDTH = GRID_SIZE * COLUMS
+export const HEIGHT = GRID_SIZE * ROWS
 export class PlaygroundAWD extends Playground {
   assets: AWDAssets
+  composer1: EffectComposer
 
   // grids: Array<{x: number, y: number}>
 
@@ -29,12 +34,14 @@ export class PlaygroundAWD extends Playground {
     this.camera.position.y = 800
     this.camera.position.z = 600
 
+    Panel.camera = this.camera
+
     const pg = new PlaneBufferGeometry(WIDTH, HEIGHT)
     pg.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
     const normalMap = new TextureLoader().load('/assets/imgs/plane-map.png')
     const pm = new MeshStandardMaterial({
       color: 0x666666,
-      roughness: 0.7,
+      roughness: 0.6,
       side: DoubleSide,
       normalMap
     }) 
@@ -86,7 +93,7 @@ export class PlaygroundAWD extends Playground {
     redLight.position.set(-1000, 300, -250)
     redLight1.position.set(-1000, 300, 250)
 
-    whiteLight.position.set(0, 1000, -300)
+    whiteLight.position.set(0, 1000, 500)
     
     this.add(redLight, redLight1, blueLight, blueLight1, whiteLight)
     // this.add(
@@ -96,26 +103,34 @@ export class PlaygroundAWD extends Playground {
     //   new PointLightHelper(redLight1, 50),
     //   new PointLightHelper(whiteLight, 50)
     // )
-
-    const building = new Building(assets.buildings[3], GRID_SIZE * 3)
-    building.status = 1
-    building.position.y = 10
-    this.add(building)
-    console.log(building)
     
     this.controls.autoRotate = false
-
     this.camera.lookAt(0, 300, 0)
 
-    this.add(new AxesHelper(500))
+    this.controls.zoomSpeed = 0
+
+    // 另一台摄像机
+    const w = 280
+    const h = 180
+    const camera1 = new PerspectiveCamera(70, w / h, 1, 4000)
+    camera1.position.set(0, 900, 900)
+    camera1.lookAt(0, -100, 0)
+    const renderer1 = new WebGLRenderer({ antialias: false })
+    renderer1.setSize(w, h)
+    const scenePass1 = new RenderPass(this, camera1)
+    this.composer1 = new EffectComposer(renderer1)
+    const filmPass = new FilmPass(0.01, 0.5, 180, 1)
+    this.composer1.passes = [scenePass1, filmPass]
+    const renderDom = renderer1.domElement
+    renderDom.classList.add('awd-sm-renderer')
+    this.el.appendChild(renderDom)
 
     this.resize()
     this.animate()
   }
-  addDevice(device: any) {
 
-  }
-  addArea() {
-    
+  animate() {
+    super.animate()
+    this.composer1.render()
   }
 }

@@ -43,6 +43,8 @@ export class Building extends BaseObject {
     if (boxSize.x !== boxSize.y) {
       const scale = new Matrix4().makeScale(size / boxSize.x, size / boxSize.y, size / boxSize.z)
       geometry.applyMatrix4(scale)
+      // const translation = new Matrix4().makeTranslation(0, 24, 0)
+      // geometry.applyMatrix4(translation)
     }
     this.add(ms)
 

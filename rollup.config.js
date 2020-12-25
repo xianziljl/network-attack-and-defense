@@ -13,6 +13,7 @@ const paths = {
   'three/examples/jsm/postprocessing/EffectComposer': '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js',
   'three/examples/jsm/postprocessing/RenderPass': '../node_modules/three/examples/jsm/postprocessing/RenderPass.js',
   'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
+  'three/examples/jsm/postprocessing/FilmPass': '../node_modules/three/examples/jsm/postprocessing/FilmPass.js',
 
   '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',
@@ -29,7 +30,7 @@ const plugins = [
   livereload()
 ]
 
-export default [{
+export default {
   input: 'src/index.ts',
   external,
   output: {
@@ -38,13 +39,4 @@ export default [{
     paths
   },
   plugins
-}, {
-  input: 'src/editor.ts',
-  external,
-  output: {
-    file: 'js/map-editor.js',
-    format: 'esm',
-    paths
-  },
-  plugins
-}]
+}

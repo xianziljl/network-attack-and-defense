@@ -17,14 +17,16 @@ export class Panel {
   private _visible = false
   public offset: PanelOffset
   public content: HTMLDivElement
+  public distance: number
 
-  constructor(obj: BaseObject, offset?: PanelOffset) {
+  constructor(obj: BaseObject, offset?: PanelOffset, distance = 1200) {
     this.obj = obj
     this.el = h('div') as HTMLDivElement
     this.el.className = 'panel'
     this.content = h('div') as HTMLDivElement
     this.content.className = 'panel-content'
     this.content.innerHTML = this.obj.name || '_'
+    this.distance = distance
     this.el.appendChild(this.content)
     let panelsContainer = document.querySelector('.panels')
     if (!panelsContainer) {
@@ -54,7 +56,7 @@ export class Panel {
     v.y = -(v.y - 1) / 2 * window.innerHeight
     
     let style = `transform: translate3d(${v.x}px, ${v.y}px, 0);`
-    if (distance > 1200 || distance <= 0) style += `visibility: hidden;`
+    if (distance > this.distance || distance <= 0) style += `visibility: hidden;`
     else style += `visibility: visible;`
 
     this.el.setAttribute('style', style)

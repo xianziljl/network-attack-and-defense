@@ -5,6 +5,16 @@ body{
 div{
   box-sizing: border-box;
 }
+.f1{flex: 1;}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./assets/material-icons-outline.woff2);
+}
+
+.icon{font-family: 'Material Icons';font-size: 24px;}
 
 .broadcast{
   position: absolute;display: inline-block;
@@ -19,9 +29,7 @@ div{
   &-content{color: rgba(#fff, 0.6);font-size: 16px;margin-top: 5px;}
 }
 
-.playground{
-  &>canvas{width: 100%!important;height: 100%!important;}
-}
+.playground-canvas{width: 100%!important;height: 100%!important;}
 
 .css-render-dom{
   position: absolute;left: 0;top: 0;
@@ -60,6 +68,14 @@ div{
       .panel-target-title{border-bottom: 1px solid rgba(255, 52, 52, 0.2);}
     }
   }
+  &-target-awd{
+    min-width: 130px;height: 36px;border: 1px solid #00b7ff;
+    background-color: rgba(0, 183, 255, 0.2);display: flex;
+    font-size: 12px;
+    .icon{padding: 6px;font-size: 22px;margin-right: 5px;}
+    .bar{height: 5px;margin-top: 3px;background-color: rgba(#fff, 0.3);}
+    .bld{width: 50%;background-color: #00b7ff;height: 100%;}
+  }
   // &>div{position: absolute;bottom: 0;}
 }
 
@@ -84,3 +100,5 @@ div{
   }
   &.hide{opacity: 0;pointer-events: none;}
 }
+
+.awd-sm-renderer{position: absolute;right: 20px;top: 20px;width: auto;height: auto;border: 1px solid rgba(#fff, 0.3);}

@@ -54,6 +54,7 @@ export class TeamCTF extends BaseObject {
 
     const g = new BoxGeometry(6, 24, 6)
     g.faces.splice(4, 2)
+    g.faces.splice(4, 2)
     const tail = new Mesh(g, tailMaterial)
     tail.rotation.x = -Math.PI / 2
     tail.position.set(-20, -5, -55)

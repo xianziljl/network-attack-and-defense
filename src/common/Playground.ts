@@ -37,6 +37,7 @@ export class Playground extends Scene{
   constructor(el: HTMLElement) {
     super()
     this.el = el
+    this.el.classList.add('playground-canvas')
     this.init()
   }
 
