@@ -8,6 +8,7 @@ import { Panel } from '../common/Panel'
 import { MapGrid } from './MapGrid'
 import { Tween, Easing } from '@tweenjs/tween.js'
 import { TargetCTF } from './TargetCTF'
+import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier'
 
 export class PlaygroundCTF extends Playground {
   // 底部雷达扫描
@@ -58,6 +59,7 @@ export class PlaygroundCTF extends Playground {
     // 地形
     const material = new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending })
     const terrainGeometry = new Terrain(assets.heightimg)
+    // const simplifyGeometry = new SimplifyModifier().modify(terrainGeometry, 1000)
     const edges = new EdgesGeometry(terrainGeometry, 1)
     const terrain = new LineSegments(edges, material)
     terrain.position.set(0, -300, -300)

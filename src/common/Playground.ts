@@ -32,7 +32,7 @@ export class Playground extends Scene{
 
   // 鼠标位置
   static mouse = new Vector2()
-  static raycaster = new Raycaster()
+  // static raycaster = new Raycaster()
 
   constructor(el: HTMLElement) {
     super()

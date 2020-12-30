@@ -7,13 +7,14 @@ import { BaseObject } from '../common/BaseObject'
 import { TeamCTFPanel } from './TeamCTFPanel'
 import { loop } from '../utils/loop'
 import { TargetCTF } from './TargetCTF'
+import { imgsDir } from '../consts'
 
 const tailMaterial = new MeshBasicMaterial({
   transparent: true,
   blending: AdditiveBlending,
   side: DoubleSide,
   depthWrite: false,
-  map: new TextureLoader().load('../assets/imgs/team-tail.png')
+  map: new TextureLoader().load(`${imgsDir}/team-tail.png`)
 })
 
 let meshMaterial: MeshPhysicalMaterial = null

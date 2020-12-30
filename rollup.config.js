@@ -14,6 +14,7 @@ const paths = {
   'three/examples/jsm/postprocessing/RenderPass': '../node_modules/three/examples/jsm/postprocessing/RenderPass.js',
   'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
   'three/examples/jsm/postprocessing/FilmPass': '../node_modules/three/examples/jsm/postprocessing/FilmPass.js',
+  'three/examples/jsm/modifiers/SimplifyModifier': '../node_modules/three/examples/jsm/modifiers/SimplifyModifier.js',
 
   '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',

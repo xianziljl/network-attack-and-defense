@@ -1,11 +1,12 @@
 import { Easing, Tween } from '@tweenjs/tween.js'
 import { AdditiveBlending, DoubleSide, Group, Mesh, MeshBasicMaterial, PlaneBufferGeometry, Texture, TextureLoader } from 'three'
+import { imgsDir } from '../consts'
 import { BaseObject } from './BaseObject'
 
 export class Fire extends BaseObject {
   static pool: Fire[] = []
   static size = 100
-  static texture: Texture = new TextureLoader().load('/assets/imgs/fire1.png')
+  static texture: Texture = new TextureLoader().load(`${imgsDir}/fire1.png`)
 
   texture: Texture
   used = false

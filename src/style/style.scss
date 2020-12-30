@@ -11,7 +11,7 @@ div{
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url(./assets/material-icons-outline.woff2);
+  src: url('./assets/material-icons-outline.woff2');
 }
 
 .icon{font-family: 'Material Icons';font-size: 24px;}
@@ -22,7 +22,7 @@ div{
   padding: 20px;opacity: 1;background: rgba(#000, 0.6);
   text-align: center;color: #fff;
   transition: all .5s;transform: scale(1);
-  background: url(/assets/imgs/boardcast-bg1.png) center / 100% 100%;
+  background: url('../assets/imgs/boardcast-bg1.png') center / 100% 100%;
   &.in{opacity: 0;transform: scale(1.5);}
   &.out{opacity: 0;transform: scale(0.5);}
   &-title{color: rgb(255, 69, 36);font-size: 26px;font-weight: bold;}
@@ -41,11 +41,11 @@ div{
   display: flex;justify-content: center;align-items: flex-end;overflow: visible;
   white-space: nowrap;color: rgba(#fff, 0.8);
   // &-content{height: ;}
-  &-team{padding: 5px 10px;background: url('/assets/imgs/team-bg.png') center / 100% 100%;}
+  &-team{padding: 5px 10px;background: url('../assets/imgs/team-bg.png') center / 100% 100%;}
   &-target{
     overflow: hidden;opacity: 0.5;
     min-width: 180px;width: 180px;height: 52px;transition: height .3s, width .3s;
-    padding: 10px;background: url('/assets/imgs/target-bg.png') center / 100% 100% rgba(#020b1e, 0.5);
+    padding: 10px;background: url('../assets/imgs/target-bg.png') center / 100% 100% rgba(#020b1e, 0.5);
     &:hover{opacity: 1;}
     &-title{
       display: flex;font-size: 16px;font-weight: bold;padding: 8px;
@@ -58,13 +58,13 @@ div{
     }
     &-type-2{
       color: #00b7ff;height: 180px;width: 240px;opacity: 1;z-index: 100;
-      background: url('/assets/imgs/target-bg-2.png') center / 100% 100% rgba(#020b1e, 0.5);
+      background: url('../assets/imgs/target-bg-2.png') center / 100% 100% rgba(#020b1e, 0.5);
       .panel-target-title{border-bottom: 1px solid rgba(52, 116, 255, 0.2);}
       .panel-target-item{border-bottom: 1px solid rgba(52, 116, 255, 0.1);}
     }
     &-type-3{
       color: #ff3434;height: 180px;width: 240px;opacity: 1;z-index: 100;
-      background: url('/assets/imgs/target-bg-1.png') center / 100% 100% rgba(#020b1e, 0.5);
+      background: url('../assets/imgs/target-bg-1.png') center / 100% 100% rgba(#020b1e, 0.5);
       .panel-target-title{border-bottom: 1px solid rgba(255, 52, 52, 0.2);}
     }
   }

@@ -7,6 +7,7 @@ import { Playground } from '../common/Playground'
 import { Terrain } from '../common/Terrain'
 import { AWDAssets } from './AWDAssets'
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass'
+import { imgsDir } from '../consts'
 
 export const GRID_SIZE = 60
 export const ROWS = 15
@@ -38,7 +39,7 @@ export class PlaygroundAWD extends Playground {
 
     const pg = new PlaneBufferGeometry(WIDTH, HEIGHT)
     pg.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
-    const normalMap = new TextureLoader().load('/assets/imgs/plane-map.png')
+    const normalMap = new TextureLoader().load(`${imgsDir}/plane-map.png`)
     const pm = new MeshStandardMaterial({
       color: 0x666666,
       roughness: 0.6,
@@ -48,12 +49,12 @@ export class PlaygroundAWD extends Playground {
     const plane = new Mesh(pg, pm)
 
     const pm1 = pm.clone()
-    pm1.map = new TextureLoader().load('/assets/imgs/shadow.png')
+    pm1.map = new TextureLoader().load(`${imgsDir}/shadow.png`)
     const plane1 = new Mesh(pg, pm1)
     plane1.position.set(400, -50, 200)
 
     const pm2 = pm.clone()
-    pm2.map = new TextureLoader().load('/assets/imgs/shadow-1.png')
+    pm2.map = new TextureLoader().load(`${imgsDir}/shadow-1.png`)
     const plane2 = new Mesh(pg, pm2)
     plane2.scale.set(2, 1, 3.2)
     plane2.position.set(0, -100, 0)
