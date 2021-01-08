@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>恒安嘉新网络攻防实训平台</title>
-  <link rel="stylesheet" href="./js/main.css">
+  <link rel="stylesheet" href="./js/ctf.css">
   <style>
     html, body{height: 100%;}
     .playground{width: 100%;height: 100%;}
@@ -15,7 +15,7 @@
 
   <script src="./node_modules/axios/dist/axios.min.js"></script>
   <script type="module">
-    import { PlaygroundAWD, AWDAssetsLoader, Area, TargetAWD, random } from './js/main.js'
+    import { PlaygroundAWD, AWDAssetsLoader, Area, TargetAWD, random } from './js/awd.js'
 
     async function init() {
       const assets = await AWDAssetsLoader.load()
@@ -38,21 +38,15 @@
         }
       })
 
-      setTimeout(() => {
-        playground.attack(targets[0])
-      }, 3000)
-      setTimeout(() => {
-        playground.attack(targets[0])
-      }, 5000)
-      setTimeout(() => {
-        playground.attack(targets[0])
-      }, 7000)
-      setTimeout(() => {
-        playground.attack(targets[0])
-      }, 9000)
-      setTimeout(() => {
-        playground.attack(targets[0])
-      }, 12000)
+      // 随机攻击
+      function randomAttack() {
+        if (!targets.length) return
+        const target = targets[random(0, targets.length - 1)]
+        playground.attack(target)
+        setTimeout(randomAttack, Math.random() * 10000)
+      }
+      
+      setTimeout(randomAttack, 5000)
     }
     init()
   </script>

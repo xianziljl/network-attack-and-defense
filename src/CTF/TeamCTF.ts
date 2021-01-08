@@ -17,7 +17,7 @@ const tailMaterial = new MeshBasicMaterial({
   map: new TextureLoader().load(`${imgsDir}/team-tail.png`)
 })
 
-let meshMaterial: MeshPhysicalMaterial = null
+let meshMaterial: MeshStandardMaterial
 
 
 export class TeamCTF extends BaseObject {
@@ -42,8 +42,9 @@ export class TeamCTF extends BaseObject {
 
     const mtl = mesh.material as MeshStandardMaterial
     const normalMap = mtl.normalMap
-    meshMaterial = meshMaterial || new MeshPhysicalMaterial({
+    meshMaterial = meshMaterial || new MeshStandardMaterial({
       color: 0x455a69,
+      roughness: 0.5,
       normalMap
     })
     const ms = mesh.clone()

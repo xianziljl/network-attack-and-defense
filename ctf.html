@@ -8,14 +8,33 @@
   <style>
     html, body{height: 100%;}
     .playground{width: 100%;height: 100%;}
+    .pf{position: absolute;left: 0;top: 0;width: 100%;height: 100%;}
+    .fr{display: flex;flex-direction: row;}
+    .fc{display: flex;flex-direction: column;}
+    .f1{flex: 1;}
+    .osy{overflow-y: auto;}
+    .pen{pointer-events: none;}
+    .pea{pointer-events: auto;}
+
+    .main{z-index: 10;}
+    .box{box-shadow: 0 0 0 1px #fff;}
+    .left, .right{width: 360px;}
   </style>
 </head>
 <body>
   <div class="playground" id="ctf"></div>
+  <div class="pen pf fc">
+    <div class="pea box">aldfjal</div>
+    <div class="f1 fr">
+      <div class="left pea osy box"></div>
+      <div class="f1"></div>
+      <div class="right pea osy box"></div>
+    </div>
+  </div>
 
-  <script src="./node_modules/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js"></script>
   <script type="module">
-    import { PlaygroundCTF, CTFAssetsLoader, TargetCTF, TeamCTF, random } from './js/main.js'
+    import { PlaygroundCTF, CTFAssetsLoader, TargetCTF, TeamCTF, random } from './js/ctf.js'
 
     async function init() {
       // 加载场景所需资源
@@ -56,7 +75,7 @@
       
       setTimeout(randomAttack, 5000)
     }
-    init()
+    // init()
   </script>
 </body>
 </html>

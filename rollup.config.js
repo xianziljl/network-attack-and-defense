@@ -17,8 +17,8 @@ const paths = {
   'three/examples/jsm/modifiers/SimplifyModifier': '../node_modules/three/examples/jsm/modifiers/SimplifyModifier.js',
 
   '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
-  'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',
-  'impetus': '../node_modules/impetus/src/Impetus.js'
+  // 'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',
+  // 'impetus': '../node_modules/impetus/src/Impetus.js'
 }
 
 const external = Object.keys(paths)
@@ -31,13 +31,22 @@ const plugins = [
   livereload()
 ]
 
-export default {
-  input: 'src/index.ts',
+export default [{
+  input: 'src/CTF/index.ts',
   external,
   output: {
-    file: 'js/main.js',
+    file: 'js/ctf.js',
     format: 'esm',
     paths
   },
   plugins
-}
+}, {
+  input: 'src/AWD/index.ts',
+  external,
+  output: {
+    file: 'js/awd.js',
+    format: 'esm',
+    paths
+  },
+  plugins
+}]
