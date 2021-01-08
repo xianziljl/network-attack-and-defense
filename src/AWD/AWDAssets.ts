@@ -8,7 +8,9 @@ export interface AWDAssets {
   buildings?: Array<BufferGeometry | Geometry>,
   // heightimg?: HTMLImageElement,
   cubeTexture?: CubeTexture
-  plane1?: Mesh
+  plane1?: Mesh,
+  zhancheObj?: Mesh,
+  zhancheMtl?: Material
 }
 
 export class AWDAssetsLoader {
@@ -57,10 +59,15 @@ export class AWDAssetsLoader {
         assets.buildings.push(geometry)
         callback()
       })
-      new GLTFLoader(AssetsLoadingManager).load(`${modelsDir}/002.gltf`, gltf => {
-        assets.plane1 = gltf.scene.children[0] as Mesh
+      new OBJLoader2(AssetsLoadingManager).load(`${modelsDir}/zhanche.obj`, obj => {
+        const mesh = obj.children[0] as Mesh
+        assets.zhancheObj = mesh
         callback()
       })
+      // new MaterialLoader(AssetsLoadingManager).load(`${modelsDir}/zhanche.mtl`, mtl => {
+      //   assets.zhancheMtl = mtl
+      //   callback()
+      // })
     })
   }
 }

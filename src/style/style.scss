@@ -74,7 +74,7 @@ div{
     font-size: 12px;
     .icon{padding: 6px;font-size: 22px;margin-right: 5px;}
     .bar{height: 5px;margin-top: 3px;background-color: rgba(#fff, 0.3);}
-    .bld{width: 50%;background-color: #00b7ff;height: 100%;}
+    .bld{width: 50%;background-color: #00b7ff;height: 100%;transition: width .3s;}
   }
   // &>div{position: absolute;bottom: 0;}
 }

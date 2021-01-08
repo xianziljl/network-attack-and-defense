@@ -8,6 +8,8 @@ import { Terrain } from '../common/Terrain'
 import { AWDAssets } from './AWDAssets'
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass'
 import { imgsDir } from '../consts'
+import { Tank } from './Tank'
+import { TargetAWD } from './TargetAWD'
 
 export const GRID_SIZE = 60
 export const ROWS = 15
@@ -17,6 +19,8 @@ export const HEIGHT = GRID_SIZE * ROWS
 export class PlaygroundAWD extends Playground {
   assets: AWDAssets
   composer1: EffectComposer
+
+  tanks: Tank[]
 
   // grids: Array<{x: number, y: number}>
 
@@ -89,7 +93,6 @@ export class PlaygroundAWD extends Playground {
     blueLight.position.set(1000, 600, -400)
     blueLight1.position.set(1000, 600, 400)
     blueLight.decay = 1
-    console.log(blueLight)
 
     redLight.position.set(-1000, 300, -250)
     redLight1.position.set(-1000, 300, 250)
@@ -126,8 +129,34 @@ export class PlaygroundAWD extends Playground {
     renderDom.classList.add('awd-sm-renderer')
     this.el.appendChild(renderDom)
 
+    const tank1 = new Tank(assets.zhancheObj)
+    tank1.position.set(-800, 0, -150)
+    const tank2 = new Tank(assets.zhancheObj)
+    tank2.position.set(-800, 0, 0)
+    const tank3 = new Tank(assets.zhancheObj)
+    tank3.position.set(-800, 0, 150)
+    this.add(tank1, tank2, tank3)
+    this.tanks = [tank1, tank2, tank3]
+
     this.resize()
     this.animate()
+  }
+
+  attack(target: TargetAWD) {
+    const { tanks } = this
+    let i = 0
+    function atk() {
+      setTimeout(() => {
+        const t = tanks[i]
+        if (t) {
+          t.toAttack(target)
+          i += 1
+          atk()
+        }
+      }, 500)
+    }
+    atk()
+    target.beAttack()
   }
 
   animate() {

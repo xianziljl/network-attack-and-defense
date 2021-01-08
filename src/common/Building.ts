@@ -30,13 +30,13 @@ export class Building extends BaseObject {
   mesh: Mesh
   line: LineSegments
   box: Mesh
-  size: number
+  _size: number
   _status: Status
 
   constructor(geometry: BufferGeometry | Geometry, size: number = 200) {
     super()
     // 模型
-    this.size = size
+    this._size = size
     const ms = new Mesh(geometry, materials.normal.mesh)
     const msbox = new Box3().setFromObject(ms)
     const boxSize = msbox.getSize(new Vector3())
@@ -75,9 +75,9 @@ export class Building extends BaseObject {
 
       const fire = Fire.getOne()
       fire.position.copy(this.position)
-      fire.position.y += this.size / 2
-      const scale = this.size * this.scale.x / Fire.size * 1.2
-      const scaleY = this.size * this.scale.y / Fire.size * 1.5
+      fire.position.y += this._size / 2
+      const scale = this._size * this.scale.x / Fire.size * 1.8
+      const scaleY = this._size * this.scale.y / Fire.size * 2
       fire.scale.set(scale, scaleY, scale)
       playground.add(fire)
       fire.start()

@@ -25,6 +25,7 @@
     .map-editor{user-select: none;}
     .row{display: flex;align-items: center;}
     .f1{flex: 1;}
+    .f2{flex: 2;}
     .map, .tools{width: 1000px;}
     .map{position: relative;display: grid;height: 500px;box-shadow: 0 0 0 1px #ddd;}
     .map-cell{border: 1px solid #eee;box-sizing: border-box;}
@@ -58,7 +59,8 @@
       border-radius: 4px;bottom: 100%;display: none;left: -130px;}
     .tb-item:hover .tb-colors{display: flex;}
     .device input{background: none;appearance: none;border: 1px solid transparent;padding: 5px;font-size: 12px;outline: none;
-      color: #444;width: 100%;box-sizing: border-box;position: absolute;left: 0;top: 0;}
+      color: #fff;width: 100%;box-sizing: border-box;text-shadow: 1px 1px 2px #444;font-weight: bold;}
+    .device input::placeholder{color: #fff;}
     .device.focus{border-width: 2px;background-color: rgba(0, 0, 0, 0.3);}
     .device .icon{color: #fff;text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);}
   </style>
@@ -107,7 +109,10 @@
         @mousedown.stop="onMousedown(a)">
         <div :style="{ backgroundColor: 'var(--c-'+ a.c +')' }"></div>
         <template v-if="a.type === 'device'">
-          <input type="text" v-model="a.name" placeholder="请输入" @keydown.stop @mousedown.stop="focus=null" @change="addHistory()">
+          <div class="row" style="position: absolute;left: 0;top: 0;width: 100%;">
+            <input type="text" class="f2" v-model="a.name" placeholder="设备名称" @keydown.stop @mousedown.stop="focus=null" @change="addHistory()">
+            <input type="text" class="f1" style="bottom:0;top: auto;text-align: right;" v-model="a.s" placeholder="分值" @keydown.stop @mousedown.stop="focus=null" @change="addHistory()">
+          </div>
           <div class="icon" :style="{ fontSize: a.w * cell.w * 0.5 + 'px' }">{{getIcon(a.c)}}</div>
         </template>
       </div>
@@ -213,6 +218,7 @@
         toolbar: { x: 0, y: 0 },
         // 最终结果
         result: [],
+        // 历史记录
         history: {
           list: [],
           current: 0
@@ -264,6 +270,7 @@
         window.addEventListener('mouseup', this.onMouseup)
       },
       computed: {
+        // 当前正在框选的区域
         areaTemp() {
           if (this.mode !== 2) return null
           const { cell, area } = this
@@ -342,7 +349,6 @@
             this.addHistory()
           }
         },
-
         removeFocus() {
           const { focus, result } = this
           if (!focus) return
@@ -350,7 +356,6 @@
           this.focus = null
           this.addHistory()
         },
-
         addDevice(d) {
           const defaultSize = 3
           const device = {
@@ -361,7 +366,8 @@
             h: defaultSize,
             x: parseInt(this.colums / 2) - 1,
             y: parseInt(this.rows / 2) - 1,
-            c: d.type
+            c: d.type,
+            s: 5
           }
           this.result.push(device)
           this.addHistory()

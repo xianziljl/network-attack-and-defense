@@ -23,7 +23,7 @@
       if (data) data = JSON.parse(data)
       else data = []
       const playground = new PlaygroundAWD(document.querySelector('#awd'), assets)
-      console.log(playground)
+      const targets = []
       
       data.forEach(item => {
         if (item.type === 'area') {
@@ -34,8 +34,25 @@
           const buildingModel = assets.buildings[random(0, assets.buildings.length - 1)]
           const target = new TargetAWD(buildingModel, item)
           playground.add(target)
+          targets.push(target)
         }
       })
+
+      setTimeout(() => {
+        playground.attack(targets[0])
+      }, 3000)
+      setTimeout(() => {
+        playground.attack(targets[0])
+      }, 5000)
+      setTimeout(() => {
+        playground.attack(targets[0])
+      }, 7000)
+      setTimeout(() => {
+        playground.attack(targets[0])
+      }, 9000)
+      setTimeout(() => {
+        playground.attack(targets[0])
+      }, 12000)
     }
     init()
   </script>

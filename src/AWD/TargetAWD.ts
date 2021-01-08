@@ -11,14 +11,18 @@ interface DeviceData {
   y: number,
   w: number,
   h: number,
-  c: number
+  c: number,
+  s: number
 }
 
 export class TargetAWD extends Building{
   name: string
   size: number
-  panel: TargetAWDPanel
   icon: string
+  score: number
+  _score: number
+  panel: TargetAWDPanel
+
   constructor(geometry: BufferGeometry | Geometry, data: DeviceData){
     const size = data.h * GRID_SIZE
     super(geometry, GRID_SIZE)
@@ -29,8 +33,18 @@ export class TargetAWD extends Building{
     this.name = data.name
     this.size = size
     this.icon = devices[data.c - 1]?.icon ?? 'devices'
+    this.score = this._score = data.s || 5
 
     this.panel = new TargetAWDPanel(this)
+  }
+  beAttack() {
+    setTimeout(() => {
+      const s = this._score - 1
+      this._score = s < 0 ? 0 : s
+      this.explode()
+      if (this._score === 0) this.status = 2
+      this.panel.setScore(this._score, this.score)
+    }, 1800)
   }
   destroy () {
     this.panel.destroy()
