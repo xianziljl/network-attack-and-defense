@@ -36,7 +36,7 @@ export class Tank extends BaseObject{
       interval: 150,
       times: 10,
       callback: () => {
-        Bullet.shoot(playground, this, target)
+        Bullet.shoot(playground, this, target, true)
       }
     })
   }

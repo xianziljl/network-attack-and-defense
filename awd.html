@@ -19,9 +19,14 @@
 
     async function init() {
       const assets = await AWDAssetsLoader.load()
-      let data = localStorage.getItem('mapEditorCache')
-      if (data) data = JSON.parse(data)
-      else data = []
+
+      // 本地读取数据
+      // let data = localStorage.getItem('mapEditorCache')
+      // if (data) data = JSON.parse(data)
+      // else data = []
+
+      const result = await axios.get('./json/awd.json')
+      let data = result.data
       const playground = new PlaygroundAWD(document.querySelector('#awd'), assets)
       const targets = []
       
