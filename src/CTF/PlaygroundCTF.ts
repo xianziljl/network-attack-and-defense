@@ -9,6 +9,7 @@ import { MapGrid } from './MapGrid'
 import { Tween, Easing } from '@tweenjs/tween.js'
 import { TargetCTF } from './TargetCTF'
 import { SimplifyModifier } from 'three/examples/jsm/modifiers/SimplifyModifier'
+import { assetsDir, imgsDir } from '../consts'
 
 export class PlaygroundCTF extends Playground {
   // 底部雷达扫描
@@ -72,14 +73,27 @@ export class PlaygroundCTF extends Playground {
     const m = new MeshBasicMaterial({
       transparent: true,
       blending: AdditiveBlending,
-      map: assets.scanTexture
+      map: new TextureLoader().load(`${imgsDir}/scan.png`),
+      depthWrite: false
     })
     this.scan = new Mesh(g, m)
     this.scan.position.y = -320
     this.add(this.scan)
 
+    const pg1 = new PlaneBufferGeometry(2000, 2000)
+    pg1.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
+    const m1 = new MeshBasicMaterial({
+      transparent: true,
+      blending: AdditiveBlending,
+      map: new TextureLoader().load(`${imgsDir}/btm-bg.png`),
+      depthWrite: false
+    })
+    const mesh1 = new Mesh(pg1, m1)
+    mesh1.position.y = -321
+    this.add(mesh1)
+
     // 地板
-    const pg = new BoxBufferGeometry(2500, 50, 2500)
+    const pg = new BoxBufferGeometry(5000, 50, 5000)
     const pm = new MeshLambertMaterial({ color: 0x2a3d5c, side: DoubleSide })
     const mesh = new Mesh(pg, pm)
     mesh.position.y = -350
@@ -139,12 +153,12 @@ export class PlaygroundCTF extends Playground {
       .to({ x: p.x, y: -300, z: p.z }, 1000)
       .easing(Easing.Back.Out)
       .start()
-    const lineMtl = target.line.material as Material
-    lineMtl.opacity = 0.5
-    new Tween(lineMtl)
-      .delay((index + 1) * 100 + 3000)
-      .to({ opacity: 0.3 }, 2500)
-      .start()
+    // const lineMtl = target.line.material as Material
+    // lineMtl.opacity = 0.5
+    // new Tween(lineMtl)
+    //   .delay((index + 1) * 100 + 3000)
+    //   .to({ opacity: 0.3 }, 2500)
+    //   .start()
     this.targets.push(target)
   }
 

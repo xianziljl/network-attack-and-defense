@@ -7,7 +7,6 @@ import { imgsDir, modelsDir } from '../consts'
 export interface CTFAssets {
   buildings?: Array<BufferGeometry | Geometry>,
   aerobat?: Mesh,
-  scanTexture?: Texture,
   heightimg?: HTMLImageElement,
   cubeTexture?: CubeTexture
 }
@@ -19,7 +18,7 @@ export class CTFAssetsLoader {
         buildings: []
       }
     
-      let count = 9
+      let count = 8
     
       function callback() {
         count -= 1
@@ -30,11 +29,8 @@ export class CTFAssetsLoader {
         assets.heightimg = img
         callback()
       })
-      new TextureLoader(AssetsLoadingManager).load(`${imgsDir}/scan.png`, texture => {
-        assets.scanTexture = texture
-        callback()
-      })
-      new CubeTextureLoader(AssetsLoadingManager).load(Array(6).fill(`${imgsDir}/bg.jpg`), cubeTexture => {
+      const arr = ['5', '7', '5', '5', '8', '6']
+      new CubeTextureLoader(AssetsLoadingManager).load(arr.map(n => `${imgsDir}/${n}.png`), cubeTexture => {
         assets.cubeTexture = cubeTexture
         callback()
       })

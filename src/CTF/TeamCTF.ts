@@ -8,14 +8,15 @@ import { TeamCTFPanel } from './TeamCTFPanel'
 import { loop } from '../utils/loop'
 import { TargetCTF } from './TargetCTF'
 import { imgsDir } from '../consts'
+import { random } from '../AWD'
 
-const tailMaterial = new MeshBasicMaterial({
-  transparent: true,
-  blending: AdditiveBlending,
-  side: DoubleSide,
-  depthWrite: false,
-  map: new TextureLoader().load(`${imgsDir}/team-tail.png`)
-})
+// const tailMaterial = new MeshBasicMaterial({
+//   transparent: true,
+//   blending: AdditiveBlending,
+//   side: DoubleSide,
+//   depthWrite: false,
+//   map: new TextureLoader().load(`${imgsDir}/team-tail.png`)
+// })
 
 let meshMaterial: MeshStandardMaterial
 
@@ -57,7 +58,14 @@ export class TeamCTF extends BaseObject {
     const g = new BoxGeometry(6, 24, 6)
     g.faces.splice(4, 2)
     g.faces.splice(4, 2)
-    const tail = new Mesh(g, tailMaterial)
+    const m = new MeshBasicMaterial({
+      transparent: true,
+      blending: AdditiveBlending,
+      side: DoubleSide,
+      depthWrite: false,
+      map: new TextureLoader().load(`${imgsDir}/team-tail-${random(0, 7)}.png`)
+    })
+    const tail = new Mesh(g, m)
     tail.rotation.x = -Math.PI / 2
     tail.position.set(-20, -5, -55)
     const tail2 = tail.clone()
