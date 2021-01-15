@@ -24,7 +24,7 @@ export class Playground extends Scene{
   // 合成器
   composer = new EffectComposer(this.renderer)
   // 交互控制器
-  controls = new OrbitControls(this.camera, document.body)
+  controls: OrbitControls
   // 是否已暂停
   isPaused = false
   // 帧率
@@ -38,6 +38,7 @@ export class Playground extends Scene{
     super()
     this.el = el
     this.el.classList.add('playground-canvas')
+    this.controls = new OrbitControls(this.camera, el)
     this.init()
   }
 
