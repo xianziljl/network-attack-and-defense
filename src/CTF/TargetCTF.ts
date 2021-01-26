@@ -1,8 +1,11 @@
-import { BufferGeometry, Geometry } from 'three'
+import { AdditiveBlending, BufferGeometry, Geometry, Line, LineBasicMaterial, Shape } from 'three'
+import { random } from '../AWD'
 import { Building } from '../common/Building'
+import { roundedRect } from '../utils/roundedRect'
 import { TargetCTFPanel } from './TargetCTFPanel'
 import { TeamCTF } from './TeamCTF'
 
+const outlineColors = [ 0xffea00, 0xa8ff00, 0x36ff00, 0x00ffc0, 0x00a2ff]
 
 export class TargetCTF extends Building{
   name: string
@@ -16,6 +19,17 @@ export class TargetCTF extends Building{
     this.name = name
     this.score = score
     this.panel = new TargetCTFPanel(this, { y: 200 })
+
+    const shape = roundedRect(new Shape(), 0, 0, 220, 220, 20)
+    const geomertyPoints = new BufferGeometry().setFromPoints(shape.getPoints())
+    const outline = new Line(geomertyPoints, new LineBasicMaterial({
+      color: outlineColors[random(0, outlineColors.length - 1)],
+      linewidth: 2,
+      blending: AdditiveBlending
+    }))
+    outline.rotation.x = -Math.PI / 2
+    outline.position.set(-110, -10, 110)
+    this.add(outline)
   }
 
   beAttack(team: TeamCTF, success: boolean) {

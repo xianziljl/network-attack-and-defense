@@ -33,7 +33,7 @@ export class PlaygroundAWD extends Playground {
 
     this.ambientLight.intensity - 0.5
 
-    this.bloomPass.threshold = 0.5
+    // this.bloomPass.threshold = 0.5
 
     this.camera.fov = 70
     this.camera.position.y = 800

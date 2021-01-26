@@ -1,13 +1,15 @@
 import { AmbientLight, DirectionalLight, FogExp2, PerspectiveCamera, Raycaster, Scene, Vector2, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
+// import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass'
 import { update as TweenUpdate } from '@tweenjs/tween.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 // import { Stats } from '../utils/stats'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { Fire } from './Fire'
 import { Panel } from './Panel'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
 
 export class Playground extends Scene{
   el: HTMLElement
@@ -16,11 +18,13 @@ export class Playground extends Scene{
   // 摄像机
   camera = new PerspectiveCamera(72, 1, 0.1, 5000)
   // 渲染器
-  renderer = new WebGLRenderer({ antialias: false })
+  renderer = new WebGLRenderer({ antialias: true })
   // 场景渲染
   scenePass = new RenderPass(this, this.camera)
   // 泛光效果
-  bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1, 1.2, 0.23)
+  // bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1, 1.2, 0.23)
+  // faxx 抗锯齿
+  // fxaaPass = new ShaderPass(FXAAShader)
   // 合成器
   composer = new EffectComposer(this.renderer)
   // 交互控制器
@@ -58,7 +62,7 @@ export class Playground extends Scene{
     // 环境光
     this.add(this.ambientLight)
 
-    composer.passes = [this.scenePass, this.bloomPass]
+    composer.passes = [this.scenePass]
 
     controls.minDistance = 500
     controls.maxDistance = 1600
@@ -67,6 +71,7 @@ export class Playground extends Scene{
     controls.autoRotateSpeed = 1
     controls.enableDamping = true
     controls.dampingFactor = 0.1
+    controls.maxPolarAngle = Math.PI * 0.57
 
     // 帧率
     stats.domElement.style.position = 'absolute'
@@ -92,7 +97,9 @@ export class Playground extends Scene{
     this.camera.aspect = clientWidth / clientHeight
     this.renderer.setSize(clientWidth, clientHeight)
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.bloomPass.resolution.set(clientWidth / 2, clientHeight / 2)
+    // this.bloomPass.resolution.set(clientWidth / 2, clientHeight / 2)
+    // this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / (clientWidth * window.devicePixelRatio);
+    // this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / (clientHeight * window.devicePixelRatio);
     this.composer.setSize(clientWidth, clientHeight)
     this.camera.updateProjectionMatrix()
   }

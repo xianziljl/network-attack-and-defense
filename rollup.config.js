@@ -15,6 +15,9 @@ const paths = {
   'three/examples/jsm/postprocessing/UnrealBloomPass': '../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js',
   'three/examples/jsm/postprocessing/FilmPass': '../node_modules/three/examples/jsm/postprocessing/FilmPass.js',
   'three/examples/jsm/modifiers/SimplifyModifier': '../node_modules/three/examples/jsm/modifiers/SimplifyModifier.js',
+  'three/examples/jsm/shaders/FXAAShader': '../node_modules/three/examples/jsm/shaders/FXAAShader.js',
+  'three/examples/jsm/postprocessing/ShaderPass': '../node_modules/three/examples/jsm/postprocessing/ShaderPass.js',
+  
 
   '@tweenjs/tween.js': '../node_modules/@tweenjs/tween.js/dist/tween.esm.js',
   // 'vue': '../node_modules/vue/dist/vue.esm.browser.min.js',
@@ -27,7 +30,7 @@ const plugins = [
   resolve(),
   typescript(),
   scss(),
-  serve(),
+  serve({ port: 10002 }),
   livereload()
 ]
 

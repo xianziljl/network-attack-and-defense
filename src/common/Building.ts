@@ -4,18 +4,18 @@ import { Fire } from './Fire'
 
 const materials = {
   normal: {
-    mesh: new MeshLambertMaterial({ color: 0x2a3d5c }),
-    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending, transparent: true, opacity: 0.3 }),
+    mesh: new MeshLambertMaterial({ color: 0x78abff, transparent: true, opacity: 0.55 }),
+    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending, transparent: true, visible: false }),
     box: new MeshLambertMaterial({ color: 0x2a3d5c, transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false }),
   },
   red: {
-    mesh: new MeshLambertMaterial({ color: 0x350000 }),
-    line: new LineBasicMaterial({ color: 0xff2000, blending: AdditiveBlending }),
+    mesh: new MeshLambertMaterial({ color: 0xa01717 }),
+    line: new LineBasicMaterial({ color: 0xff2000, blending: AdditiveBlending, transparent: true, opacity: 0.3, visible: true }),
     box: new MeshLambertMaterial({ color: 0xff2000, transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false }),
   },
   blue: {
-    mesh: new MeshLambertMaterial({ color: 0x002f69 }),
-    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending }),
+    mesh: new MeshLambertMaterial({ color: 0x0061ff }),
+    line: new LineBasicMaterial({ color: 0x006bff, blending: AdditiveBlending, transparent: true, opacity: 0.2, visible: true }),
     box: new MeshLambertMaterial({ color: 0x006bff, transparent: true, opacity: 0.6, blending: AdditiveBlending, depthWrite: false }),
   }
 }

@@ -31,7 +31,7 @@ export class PlaygroundCTF extends Playground {
   focusTeam: TeamCTF
   // 地图网格
   mapGrid = new MapGrid()
-  gridSize = 210
+  gridSize = 240
 
   constructor(el: HTMLElement, assets: CTFAssets) {
     super(el)
@@ -43,7 +43,7 @@ export class PlaygroundCTF extends Playground {
     this.resize()
 
     // 灯光
-    const dirLight = new DirectionalLight(0xffffff, 0.3)
+    const dirLight = new DirectionalLight(0xffffff, 0.7)
     dirLight.position.set(1500, 800, 3000)
     this.add(dirLight)
 
@@ -84,6 +84,7 @@ export class PlaygroundCTF extends Playground {
     pg1.applyMatrix4(new Matrix4().makeRotationX(-Math.PI / 2))
     const m1 = new MeshBasicMaterial({
       transparent: true,
+      opacity: 0.6,
       blending: AdditiveBlending,
       map: new TextureLoader().load(`${imgsDir}/btm-bg.png`),
       depthWrite: false
@@ -174,7 +175,7 @@ export class PlaygroundCTF extends Playground {
     if (this.isFocus || !team || this.focusTeam) return
     this.focusTeam = team
     Panel.camera = this.focusCamera
-    this.composer.passes = [this.focusScenePass, this.bloomPass]
+    this.composer.passes = [this.focusScenePass]
     this.isFocus = true
     this.controls.enabled = false
     setTimeout(this.unFocus.bind(this), 3000)
@@ -182,7 +183,7 @@ export class PlaygroundCTF extends Playground {
 
   unFocus() {
     Panel.camera = this.camera
-    this.composer.passes = [this.scenePass, this.bloomPass]
+    this.composer.passes = [this.scenePass]
     this.focusTeam = null
     this.controls.enabled = true
     // 延迟 3 秒，避免频繁特写
