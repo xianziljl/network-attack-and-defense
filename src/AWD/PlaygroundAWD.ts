@@ -14,8 +14,9 @@ import { TargetAWD } from './TargetAWD'
 export const GRID_SIZE = 60
 export const ROWS = 15
 export const COLUMS = 30
-export const WIDTH = GRID_SIZE * COLUMS
+export const WIDTH = GRID_SIZE * COLUMS + 200
 export const HEIGHT = GRID_SIZE * ROWS
+
 export class PlaygroundAWD extends Playground {
   assets: AWDAssets
   composer1: EffectComposer
@@ -76,7 +77,7 @@ export class PlaygroundAWD extends Playground {
     for (let i = 0; i < ROWS; i++) {
       for (let j = 0; j < COLUMS; j++) {
         const g = grid.clone()
-        g.position.x = j * GRID_SIZE - WIDTH / 2 + GRID_SIZE / 2
+        g.position.x = j * GRID_SIZE - WIDTH / 2 + GRID_SIZE / 2 + 200
         g.position.z = i * GRID_SIZE - HEIGHT / 2 + GRID_SIZE / 2
         g.position.y = 1
         this.add(g)
@@ -130,11 +131,11 @@ export class PlaygroundAWD extends Playground {
     this.el.appendChild(renderDom)
 
     const tank1 = new Tank(assets.zhancheObj)
-    tank1.position.set(-800, 0, -150)
+    tank1.position.set(-900, 0, -150)
     const tank2 = new Tank(assets.zhancheObj)
-    tank2.position.set(-800, 0, 0)
+    tank2.position.set(-900, 0, 0)
     const tank3 = new Tank(assets.zhancheObj)
-    tank3.position.set(-800, 0, 150)
+    tank3.position.set(-900, 0, 150)
     this.add(tank1, tank2, tank3)
     this.tanks = [tank1, tank2, tank3]
 
